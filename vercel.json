@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "http://mbasic7.pikamc.vn:25243/$1"
+    }
+  ]
+}
