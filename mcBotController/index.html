@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sayraa | Minecraft Bot Controller</title>
+    <title>Sayraa | Minecraft Bot Controller Premium</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,17 +30,11 @@
                     },
                     animation: {
                         'float-slow': 'float 8s ease-in-out infinite',
-                        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     },
                     keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translate(0, 0)' },
-                            '50%': { transform: 'translate(10px, -20px)' }
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(15px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        }
+                        float: { '0%, 100%': { transform: 'translate(0, 0)' }, '50%': { transform: 'translate(5px, -10px)' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
                     }
                 }
             }
@@ -51,52 +45,49 @@
         body { background-color: #141118; color: #e5e7eb; overflow-x: hidden; font-size: 13px; }
         .bg-mesh {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none;
-            background: radial-gradient(circle at 15% 50%, rgba(202, 158, 230, 0.04), transparent 25%);
+            background: radial-gradient(circle at 15% 50%, rgba(202, 158, 230, 0.03), transparent 25%);
         }
         .glass-elegant {
             background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.05); border-top: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.2); transition: all 0.3s ease;
         }
         .input-elegant {
             background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 0.75rem; padding: 0.5rem 0.75rem; color: white; transition: all 0.2s ease;
-            font-size: 13px;
+            border-radius: 0.5rem; padding: 0.4rem 0.6rem; color: white; transition: all 0.2s ease;
+            font-size: 12px;
         }
-        .input-elegant:focus {
-            outline: none; border-color: #ca9ee6; background: rgba(255, 255, 255, 0.04);
-        }
-        ::-webkit-scrollbar { width: 4px; }
+        .input-elegant:focus { outline: none; border-color: #ca9ee6; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #3a3145; border-radius: 10px; }
     </style>
 </head>
-<body class="antialiased relative min-h-screen flex flex-col">
+<body class="antialiased relative min-h-screen flex flex-col select-none">
 
     <div class="bg-mesh"></div>
 
     <nav class="relative z-10 w-full border-b border-white/5 bg-base/40 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-3 h-11 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-lavender to-brand-rose flex items-center justify-center">
-                    <i class="fa-solid fa-robot text-[10px] text-gray-900 font-bold"></i>
+                <div class="w-5 h-5 rounded bg-gradient-to-br from-brand-lavender to-brand-rose flex items-center justify-center">
+                    <i class="fa-solid fa-robot text-[9px] text-gray-900 font-bold"></i>
                 </div>
-                <span class="font-bold text-sm tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-brand-lavender to-brand-rose">Sayraa Control</span>
+                <span class="font-bold text-xs tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-brand-lavender to-brand-rose">Sayraa Central Remake</span>
             </div>
-            <div id="global-status" class="text-[10px] font-semibold text-brand-mint bg-brand-mint/10 px-2 py-0.5 rounded border border-brand-mint/10">
-                Active Core
+            <div id="global-status" class="text-[9px] font-semibold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded border border-brand-mint/10">
+                System Stable
             </div>
         </div>
     </nav>
 
-    <main class="relative z-10 flex-grow max-w-7xl mx-auto w-full px-3 py-3 grid grid-cols-1 lg:grid-cols-3 gap-3.5">
+    <main class="relative z-10 flex-grow max-w-7xl mx-auto w-full px-2.5 py-2.5 grid grid-cols-1 lg:grid-cols-3 gap-3">
         
-        <div class="lg:col-span-1 space-y-3.5 animate-slide-up">
-            <div class="glass-elegant rounded-xl p-3.5">
-                <h2 class="text-xs font-bold mb-3 flex items-center gap-1.5 border-b border-white/5 pb-1.5">
-                    <i class="fa-solid fa-plus text-brand-lavender text-xs"></i> Triệu Hồi Bot Mới
+        <div class="lg:col-span-1 space-y-3 animate-slide-up">
+            <div class="glass-elegant rounded-xl p-3">
+                <h2 class="text-xs font-bold mb-2.5 flex items-center gap-1.5 border-b border-white/5 pb-1.5">
+                    <i class="fa-solid fa-folder-plus text-brand-lavender"></i> Đăng Ký Cấu Hình Bot
                 </h2>
                 
-                <form id="spawn-form" class="space-y-2.5">
+                <form id="spawn-form" class="space-y-2">
                     <div class="flex flex-col gap-0.5">
                         <label class="text-[9px] font-bold text-gray-400 uppercase">IP Server</label>
                         <input type="text" id="host" class="input-elegant font-mono" placeholder="mc.sayra.asia" value="localhost" required>
@@ -114,11 +105,11 @@
                     </div>
 
                     <div class="flex flex-col gap-0.5">
-                        <label class="text-[9px] font-bold text-gray-400 uppercase">Tên Nhân Vật</label>
+                        <label class="text-[9px] font-bold text-gray-400 uppercase">Tên Nhân Vật (Username)</label>
                         <input type="text" id="username" class="input-elegant font-mono" placeholder="Celeste_Bot" required>
                     </div>
 
-                    <div class="bg-white/[0.01] border border-white/5 rounded-lg p-2 grid grid-cols-2 gap-1.5 text-[11px]">
+                    <div class="bg-white/[0.01] border border-white/5 rounded-lg p-2 grid grid-cols-2 gap-1.5 text-[10px]">
                         <label class="flex items-center justify-between bg-white/5 p-1 rounded cursor-pointer">
                             <span class="text-gray-400">Tự vệ</span>
                             <input type="checkbox" id="autoDefend" class="accent-brand-lavender" checked>
@@ -137,92 +128,118 @@
                         </label>
                     </div>
 
-                    <button type="submit" class="w-full py-2 rounded-lg bg-gradient-to-r from-brand-lavender to-brand-rose text-gray-900 font-bold text-xs active:scale-95 transition-all">
-                        <i class="fa-solid fa-bolt mr-1"></i> Kết Nối Vào Server
+                    <button type="submit" class="w-full py-1.5 rounded-lg bg-gradient-to-r from-brand-lavender to-brand-rose text-gray-900 font-bold text-xs transition-transform active:scale-95">
+                        <i class="fa-solid fa-save mr-1"></i> Lưu Cấu Hình Tĩnh
                     </button>
                 </form>
             </div>
+
+            <div class="glass-elegant rounded-xl p-3">
+                <h3 class="text-xs font-bold text-brand-peach mb-2"><i class="fa-solid fa-lightbulb"></i> Gợi Ý Lệnh Treo Máy</h3>
+                <div id="suggestions-box" class="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                    <p class="text-[11px] text-gray-500">Đang đồng bộ lệnh từ backend...</p>
+                </div>
+            </div>
         </div>
 
-        <div class="lg:col-span-2 space-y-3.5 animate-slide-up" style="animation-delay: 50ms;">
+        <div class="lg:col-span-2 space-y-3 animate-slide-up" style="animation-delay: 50ms;">
             
-            <div class="glass-elegant rounded-xl p-3.5">
+            <div class="glass-elegant rounded-xl p-3">
                 <div class="flex items-center justify-between border-b border-white/5 pb-1.5 mb-2">
                     <h2 class="text-xs font-bold flex items-center gap-1.5">
-                        <i class="fa-solid fa-users text-brand-rose text-xs"></i> Đội Hình Hoạt Động
+                        <i class="fa-solid fa-server text-brand-rose"></i> Danh Sách Core Persistence
                     </h2>
-                    <span id="current-target-label" class="text-[11px] text-brand-lavender font-mono font-bold">Chưa chọn bot</span>
+                    <span id="current-target-label" class="text-[11px] text-brand-lavender font-mono font-bold">Chưa Target</span>
                 </div>
                 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-xs">
+                    <table class="w-full text-left text-xs">
                         <thead>
                             <tr class="text-[9px] text-gray-400 font-mono border-b border-white/5">
                                 <th class="pb-1">Username</th>
-                                <th class="pb-1 text-right">Hành động nóng</th>
+                                <th class="pb-1 text-center">Trạng thái</th>
+                                <th class="pb-1 text-right">Điều phối mạng</th>
                             </tr>
                         </thead>
                         <tbody id="bot-list-table">
                             <tr>
-                                <td colspan="2" class="py-2 text-center text-xs text-gray-500">Đang tải cấu hình dữ liệu...</td>
+                                <td colspan="3" class="py-2 text-center text-gray-500">Hệ thống trống.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="quick-settings-panel" class="glass-elegant rounded-xl p-3.5 hidden border border-brand-lavender/20">
-                <h3 class="text-xs font-bold text-brand-lavender mb-2 flex items-center gap-1.5">
-                    <i class="fa-solid fa-sliders"></i> Điều Chỉnh Cấu Hình Nóng: <span id="settings-bot-name" class="text-white"></span>
+            <div id="telemetry-panel" class="glass-elegant rounded-xl p-3 hidden border border-brand-mint/10">
+                <h3 class="text-xs font-bold text-brand-mint mb-2 flex items-center gap-1">
+                    <i class="fa-solid fa-heart-pulse"></i> Sinh Thể Real-time: <span id="telemetry-bot-name" class="text-white ml-1"></span>
                 </h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-                    <label class="flex flex-col justify-between p-2 rounded bg-white/5 border border-white/5">
-                        <span class="text-gray-400 mb-1">Tự Vệ</span>
-                        <input type="checkbox" id="update-autoDefend" onchange="pushLiveSettings()" class="w-4 h-4 accent-brand-mint">
-                    </label>
-                    <label class="flex flex-col justify-between p-2 rounded bg-white/5 border border-white/5">
-                        <span class="text-gray-400 mb-1">Chống AFK</span>
-                        <input type="checkbox" id="update-antiAFK" onchange="pushLiveSettings()" class="w-4 h-4 accent-brand-mint">
-                    </label>
-                    <label class="flex flex-col justify-between p-2 rounded bg-white/5 border border-white/5">
-                        <span class="text-gray-400 mb-1">Neo Vị Trí</span>
-                        <input type="checkbox" id="update-lockPosition" onchange="pushLiveSettings()" class="w-4 h-4 accent-brand-mint">
-                    </label>
-                    <label class="flex flex-col justify-between p-2 rounded bg-white/5 border border-white/5">
-                        <span class="text-gray-400 mb-1">Diệt Quái</span>
-                        <input type="checkbox" id="update-autoAttackMobs" onchange="pushLiveSettings()" class="w-4 h-4 accent-brand-mint">
-                    </label>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                <div class="glass-elegant rounded-xl p-3 flex flex-col justify-between space-y-2">
-                    <h3 class="text-xs font-bold text-gray-200"><i class="fa-solid fa-comment text-brand-peach"></i> Gửi Tin/Lệnh</h3>
-                    <input type="text" id="chat-msg" class="w-full input-elegant text-xs font-mono" placeholder="Nội dung/Lệnh...">
-                    <button onclick="sendAction('chat')" class="w-full py-1.5 rounded-lg border border-brand-peach/20 text-brand-peach text-xs">Gửi</button>
-                </div>
-
-                <div class="glass-elegant rounded-xl p-3 flex flex-col justify-between space-y-2">
-                    <h3 class="text-xs font-bold text-gray-200"><i class="fa-solid fa-location-dot text-brand-mint"></i> Tọa Độ XYZ</h3>
-                    <div class="grid grid-cols-3 gap-1 font-mono">
-                        <input type="number" id="move-x" class="input-elegant text-center p-1 text-xs" placeholder="X">
-                        <input type="number" id="move-y" class="input-elegant text-center p-1 text-xs" placeholder="Y">
-                        <input type="number" id="move-z" class="input-elegant text-center p-1 text-xs" placeholder="Z">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[11px]">
+                    <div class="bg-white/[0.01] p-2 rounded border border-white/5 space-y-1.5">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Máu (Health):</span>
+                            <span id="tel-hp" class="font-mono font-bold text-brand-rose">--/20 HP</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Thức ăn (Food):</span>
+                            <span id="tel-food" class="font-mono font-bold text-brand-peach">--/20</span>
+                        </div>
                     </div>
-                    <button onclick="sendAction('move')" class="w-full py-1.5 rounded-lg border border-brand-mint/20 text-brand-mint text-xs">Chạy</button>
-                </div>
-
-                <div class="glass-elegant rounded-xl p-3 flex flex-col justify-between space-y-2">
-                    <h3 class="text-xs font-bold text-gray-200"><i class="fa-solid fa-bullseye text-brand-rose"></i> Săn Mục Tiêu</h3>
-                    <input type="text" id="hunt-target" class="w-full input-elegant text-xs font-mono" placeholder="Tên player...">
-                    <button onclick="sendAction('hunt')" class="w-full py-1.5 rounded-lg border border-brand-rose/20 text-brand-rose text-xs">Săn</button>
+                    <div class="bg-white/[0.01] p-2 rounded border border-white/5 flex flex-col justify-center">
+                        <span class="text-gray-400 mb-0.5">Tọa độ chân thực tế:</span>
+                        <div id="tel-coords" class="font-mono text-brand-lavender font-bold">X: -- | Y: -- | Z: --</div>
+                    </div>
+                    <div class="bg-white/[0.01] p-2 rounded border border-white/5 flex flex-col justify-center">
+                        <span class="text-gray-400 mb-0.5">Mục tiêu AI săn lùng:</span>
+                        <div id="tel-target" class="font-mono text-white font-bold">None</div>
+                    </div>
+                    <div class="bg-white/[0.01] p-2 rounded border border-white/5 col-span-1 sm:col-span-3">
+                        <span class="text-gray-400 block mb-1">Túi đồ rút gọn (Inventory):</span>
+                        <div id="tel-inv" class="font-mono text-[10px] text-gray-400 truncate">Trống hoặc chưa nạp...</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="glass-elegant rounded-xl p-3">
-                <h3 class="text-xs font-bold text-gray-200 mb-1 flex items-center gap-1"><i class="fa-solid fa-terminal text-brand-lavender text-xs"></i> Live Chat Logs</h3>
-                <div id="chat-logs" class="h-24 rounded-lg bg-black/30 border border-white/5 p-2 font-mono text-[11px] overflow-y-auto space-y-0.5 text-gray-400">
-                    <p class="text-gray-600">[Hệ thống] Đang lắng nghe luồng dữ liệu sạch...</p>
+            <div id="quick-settings-panel" class="glass-elegant rounded-xl p-3 hidden border border-brand-lavender/20">
+                <h3 class="text-xs font-bold text-brand-lavender mb-2"><i class="fa-solid fa-sliders"></i> Toggle Settings</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                    <label class="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"><span class="text-gray-400">Tự Vệ</span><input type="checkbox" id="update-autoDefend" onchange="pushLiveSettings()"></label>
+                    <label class="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"><span class="text-gray-400">Chống AFK</span><input type="checkbox" id="update-antiAFK" onchange="pushLiveSettings()"></label>
+                    <label class="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"><span class="text-gray-400">Neo Vị Trí</span><input type="checkbox" id="update-lockPosition" onchange="pushLiveSettings()"></label>
+                    <label class="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"><span class="text-gray-400">Diệt Quái</span><input type="checkbox" id="update-autoAttackMobs" onchange="pushLiveSettings()"></label>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="glass-elegant rounded-xl p-2.5 flex flex-col justify-between space-y-1.5">
+                    <h3 class="text-xs font-bold text-gray-200"><i class="fa-solid fa-comment text-brand-peach"></i> Tin Nhắn Game</h3>
+                    <input type="text" id="chat-msg" class="w-full input-elegant font-mono" placeholder="Nội dung...">
+                    <button onclick="sendAction('chat')" class="w-full py-1 rounded bg-brand-peach/10 text-brand-peach text-xs font-medium border border-brand-peach/20">Gửi</button>
+                </div>
+
+                <div class="glass-elegant rounded-xl p-2.5 flex flex-col justify-between space-y-1.5">
+                    <h3 class="text-xs font-bold text-gray-200"><i class="fa-solid fa-location-arrow text-brand-mint"></i> Tọa Độ XYZ</h3>
+                    <div class="grid grid-cols-3 gap-1 font-mono">
+                        <input type="number" id="move-x" class="input-elegant text-center p-0.5" placeholder="X">
+                        <input type="number" id="move-y" class="input-elegant text-center p-0.5" placeholder="Y">
+                        <input type="number" id="move-z" class="input-elegant text-center p-0.5" placeholder="Z">
+                    </div>
+                    <button onclick="sendAction('move')" class="w-full py-1 rounded bg-brand-mint/10 text-brand-mint text-xs font-medium border border-brand-mint/20">Chạy Đến</button>
+                </div>
+
+                <div class="glass-elegant rounded-xl p-2.5 flex flex-col justify-between space-y-1.5">
+                    <h3 class="text-xs font-bold text-gray-200"><i class="fa-solid fa-crosshairs text-brand-rose"></i> Săn Mục Tiêu AI</h3>
+                    <input type="text" id="hunt-target" class="w-full input-elegant font-mono" placeholder="Tên player/mob...">
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <button onclick="sendAction('hunt')" class="py-1 rounded bg-brand-rose/10 text-brand-rose text-xs font-medium border border-brand-rose/20">Săn Đuổi</button>
+                        <button onclick="sendAction('cancel-hunt')" class="py-1 rounded bg-white/5 text-gray-400 text-xs font-medium border border-white/5">Hủy Săn</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-elegant rounded-xl p-2.5">
+                <div id="chat-logs" class="h-24 rounded-lg bg-black/30 border border-white/5 p-2 font-mono text-[11px] overflow-y-auto space-y-0.5 text-gray-400 select-text">
+                    <p class="text-gray-600">[Hệ thống] Sẵn sàng lắng nghe dữ liệu...</p>
                 </div>
             </div>
 
@@ -235,21 +252,59 @@
         const socket = io(API_URL, { transports: ['websocket'] });
         
         let selectedBotId = "all";
-        let cachedBotsData = []; // Lưu trữ cấu hình thô của dàn bot để gán lên form settings
+        let cachedBotsData = [];
 
-        socket.on('connect', () => console.log('Socket Connected'));
+        socket.on('connect', () => {
+            console.log('Socket Connected');
+            fetchSuggestions();
+        });
+
         socket.on('bot_chat', (data) => {
             const logsBox = document.getElementById('chat-logs');
             const p = document.createElement('p');
-            p.className = "border-b border-white/[0.02] pb-0.5";
+            p.className = "border-b border-white/[0.01] pb-0.5";
             p.innerHTML = `<span class="text-brand-lavender font-bold">[${data.id.substring(4,9)}]</span> <span class="text-brand-rose">&lt;${data.username}&gt;</span> ${data.message}`;
             logsBox.appendChild(p);
             logsBox.scrollTop = logsBox.scrollHeight;
         });
 
+        // LẮNG NGHE ĐO LƯỜNG TỪ BỘ NÃO CHẠY NGẦM ĐỂ UPDATE LÊN TELEMETRY PANEL
+        socket.on('bot_telemetry', (data) => {
+            if (selectedBotId !== data.bot_id) return;
+            
+            const tele = data.telemetry;
+            document.getElementById('tel-hp').innerText = `${tele.health}/20 HP`;
+            document.getElementById('tel-food').innerText = `${tele.food}/20`;
+            document.getElementById('tel-coords').innerText = `X: ${tele.position.x} | Y: ${tele.position.y} | Z: ${tele.position.z}`;
+            document.getElementById('tel-target').innerText = tele.target;
+            
+            if (tele.inventory && tele.inventory.length > 0) {
+                document.getElementById('tel-inv').innerText = tele.inventory.map(i => `${i.name} (${i.count})`).join(', ');
+            } else {
+                document.getElementById('tel-inv').innerText = 'Trống hoặc chưa có vật phẩm nào';
+            }
+        });
+
         socket.on('bot_status', () => fetchBotList());
 
-        // GỬI LỆNH TRIỆU HỒI BOT MỚI
+        // LẤY GỢI Ý LỆNH TỪ BACKEND
+        async function fetchSuggestions() {
+            try {
+                const response = await fetch(`${API_URL}/api/v1/bot/suggestions`);
+                const data = await response.json();
+                const box = document.getElementById('suggestions-box');
+                if(data.essential_commands) {
+                    box.innerHTML = data.essential_commands.map(c => `
+                        <div class="p-1 rounded bg-white/[0.02] border border-white/5 text-[11px]">
+                            <span class="text-brand-rose font-mono font-bold block cursor-pointer select-text" onclick="navigator.clipboard.writeText('${c.cmd}'); alert('Đã copy lệnh!');">${c.cmd}</span>
+                            <span class="text-gray-500 text-[10px]">${c.desc}</span>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        // TẠO CẤU HÌNH TĨNH CHO BOT
         document.getElementById('spawn-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
@@ -274,7 +329,7 @@
             } catch (err) { console.error(err); }
         });
 
-        // LẤY DANH SÁCH VÀ LƯU DATA LẠI ĐỂ CONFIG ĐỘNG
+        // TẢI DANH SÁCH BOTS KÈM STATUS ĐỘNG (OFFLINE / CONNECTING / ONLINE)
         async function fetchBotList() {
             try {
                 const response = await fetch(`${API_URL}/api/v1/bot/list`);
@@ -283,34 +338,49 @@
                 
                 const tbody = document.getElementById('bot-list-table');
                 if(cachedBotsData.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="2" class="py-2 text-center text-gray-500">Không có bot hoạt động.</td></tr>`;
-                    document.getElementById('quick-settings-panel').classList.add('hidden');
+                    tbody.innerHTML = `<tr><td colspan="3" class="py-2 text-center text-gray-500">Dàn bot lưu trữ trống.</td></tr>`;
+                    hidePanels();
                     return;
                 }
 
-                tbody.innerHTML = cachedBotsData.map(bot => `
-                    <tr class="border-b border-white/5 text-xs ${selectedBotId === bot.id ? 'bg-white/5' : ''}">
-                        <td class="py-1.5 font-semibold text-brand-mint flex items-center gap-1 select-none">
-                            <span class="w-1.5 h-1.5 rounded-full bg-brand-mint"></span>
-                            ${bot.username}
-                        </td>
-                        <td class="py-1.5 text-right space-x-1">
-                            <button onclick="quickAction('${bot.id}', 'equip')" class="px-1.5 py-0.5 text-[11px] rounded bg-brand-rose/10 text-brand-rose border border-brand-rose/20"><i class="fa-solid fa-shield-halved"></i></button>
-                            <button onclick="selectBot('${bot.id}', '${bot.username}')" class="px-2 py-0.5 text-[11px] rounded ${selectedBotId === bot.id ? 'bg-brand-lavender text-gray-900 font-bold' : 'bg-brand-lavender/10 text-brand-lavender border border-brand-lavender/20'}">Chọn</button>
-                            <button onclick="quickAction('${bot.id}', 'leave')" class="px-1.5 py-0.5 text-[11px] rounded bg-red-500/10 text-red-400 border border-red-500/20"><i class="fa-solid fa-xmark"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = cachedBotsData.map(bot => {
+                    let statusColor = 'bg-gray-500';
+                    if (bot.status === 'spawned') statusColor = 'bg-brand-mint';
+                    else if (bot.status === 'connecting') statusColor = 'bg-brand-lavender animate-pulse';
+
+                    return `
+                        <tr class="border-b border-white/5 text-xs ${selectedBotId === bot.id ? 'bg-white/5' : ''}">
+                            <td class="py-1.5 font-semibold text-gray-200 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full ${statusColor}"></span>
+                                ${bot.username}
+                            </td>
+                            <td class="py-1.5 text-center text-[10px] font-mono text-gray-400 capitalize">${bot.status}</td>
+                            <td class="py-1.5 text-right space-x-1">
+                                ${bot.status === 'offline' ? 
+                                    `<button onclick="networkAction('${bot.id}', 'connect')" class="px-2 py-0.5 text-[10px] rounded bg-brand-mint text-gray-900 font-bold"><i class="fa-solid fa-plug"></i> Conn</button>` : 
+                                    `<button onclick="quickAction('${bot.id}', 'leave')" class="px-1.5 py-0.5 text-[10px] rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"><i class="fa-solid fa-power-off"></i> Out</button>`
+                                }
+                                <button onclick="selectBot('${bot.id}', '${bot.username}')" class="px-2 py-0.5 text-[10px] rounded border ${selectedBotId === bot.id ? 'bg-brand-lavender text-gray-900 border-brand-lavender font-bold' : 'bg-brand-lavender/5 text-brand-lavender border-brand-lavender/20'}">Chọn</button>
+                                <button onclick="networkAction('${bot.id}', 'remove')" class="px-1.5 py-0.5 text-[10px] rounded bg-red-500/10 text-red-400 border border-red-500/20"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
             } catch (err) { console.error(err); }
         }
 
-        // BẤM NÚT CHỌN BOT: ĐỒNG BỘ DATA SETTING CŨ LÊN FORM ĐỂ CHỈNH SỬA SỐNG
+        function hidePanels() {
+            document.getElementById('quick-settings-panel').classList.add('hidden');
+            document.getElementById('telemetry-panel').classList.add('hidden');
+        }
+
+        // BẤM NÚT CHỌN BOT: ĐỒNG BỘ DATA SETTINGS VÀ HIỆN BẢNG MONITOR ĐO LƯỜNG SINH THỂ
         function selectBot(id, username) {
             selectedBotId = id;
             document.getElementById('current-target-label').innerText = `Target: ${username}`;
             document.getElementById('settings-bot-name').innerText = username;
+            document.getElementById('telemetry-bot-name').innerText = username;
             
-            // Tìm cấu hình hiện tại của bot trong cache để đẩy lên checkbox
             const targetBot = cachedBotsData.find(b => b.id === id);
             if(targetBot && targetBot.options) {
                 document.getElementById('update-autoDefend').checked = targetBot.options.autoDefend ?? false;
@@ -318,16 +388,37 @@
                 document.getElementById('update-lockPosition').checked = targetBot.options.lockPosition ?? false;
                 document.getElementById('update-autoAttackMobs').checked = targetBot.options.autoAttackMobs ?? false;
                 
-                // Hiện bảng Quick Settings động
                 document.getElementById('quick-settings-panel').classList.remove('hidden');
+                
+                if (targetBot.status === 'spawned') {
+                    document.getElementById('telemetry-panel').classList.remove('hidden');
+                } else {
+                    document.getElementById('telemetry-panel').classList.add('hidden');
+                }
             }
             fetchBotList();
         }
 
-        // ĐẨY SETTING MỚI LÊN BACKEND KHI GẠT TOGGLE
+        // KÍCH HOẠT NỐI MẠNG HOẶC XÓA CỨNG BẢN GHI TĨNH
+        async function networkAction(botId, action) {
+            const endpoint = action === 'connect' ? '/api/v1/bot/connect' : '/api/v1/bot/remove';
+            const method = action === 'connect' ? 'POST' : 'DELETE';
+            try {
+                await fetch(`${API_URL}${endpoint}`, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bot_id: botId })
+                });
+                if (action === 'remove' && selectedBotId === botId) {
+                    selectedBotId = "all";
+                    hidePanels();
+                }
+                fetchBotList();
+            } catch (err) { console.error(err); }
+        }
+
         async function pushLiveSettings() {
             if (selectedBotId === "all") return;
-
             const updatedPayload = {
                 bot_id: selectedBotId,
                 settings: {
@@ -337,7 +428,6 @@
                     autoAttackMobs: document.getElementById('update-autoAttackMobs').checked
                 }
             };
-
             try {
                 const res = await fetch(`${API_URL}/api/v1/bot/settings`, {
                     method: 'POST',
@@ -346,16 +436,14 @@
                 });
                 const data = await res.json();
                 if(data.success) {
-                    // Cập nhật lại cache local sau khi đổi thành công để tránh lệch trạng thái
                     const idx = cachedBotsData.findIndex(b => b.id === selectedBotId);
                     if(idx !== -1) cachedBotsData[idx].options = data.current_options;
                 }
-            } catch (err) { console.error("Lỗi cập nhật cấu hình nóng:", err); }
+            } catch (err) { console.error(err); }
         }
 
-        // CÁC HÀM PHÁT LỆNH HÀNH ĐỘNG KHÁC GIỮ NGUYÊN KHÔNG ĐỔI
         async function sendAction(type) {
-            if(selectedBotId === "all") return alert("Vui lòng click chọn 1 Bot trước!");
+            if(selectedBotId === "all") return alert("Vui lòng chọn 1 Bot trước!");
             let endpoint = '';
             let bodyData = { bot_id: selectedBotId };
 
@@ -363,6 +451,7 @@
                 endpoint = '/api/v1/bot/chat';
                 bodyData.message = document.getElementById('chat-msg').value;
                 if(!bodyData.message) return;
+                document.getElementById('chat-msg').value = ''; // Xóa sạch ô nhập sau khi gửi
             } else if (type === 'move') {
                 endpoint = '/api/v1/bot/move';
                 bodyData.x = document.getElementById('move-x').value;
@@ -373,6 +462,8 @@
                 endpoint = '/api/v1/bot/hunt';
                 bodyData.target_name = document.getElementById('hunt-target').value;
                 if(!bodyData.target_name) return;
+            } else if (type === 'cancel-hunt') {
+                endpoint = '/api/v1/bot/cancel-hunt';
             }
 
             try {
@@ -385,20 +476,13 @@
         }
 
         async function quickAction(botId, action) {
-            const endpoint = action === 'leave' ? '/api/v1/bot/leave' : '/api/v1/bot/equip';
             try {
-                await fetch(`${API_URL}${endpoint}`, {
+                await fetch(`${API_URL}/api/v1/bot/leave`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ bot_id: botId })
                 });
-                if(action === 'leave') {
-                    if(selectedBotId === botId) {
-                        selectedBotId = "all";
-                        document.getElementById('quick-settings-panel').classList.add('hidden');
-                    }
-                    fetchBotList();
-                }
+                fetchBotList();
             } catch (err) { console.error(err); }
         }
 
