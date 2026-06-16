@@ -59,6 +59,27 @@
         .input-elegant:focus { outline: none; border-color: #ca9ee6; }
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #3a3145; border-radius: 10px; }
+
+        /* Custom mượt mà cho nút gạt Toggle Switch CSS */
+        .toggle-switch {
+            position: relative; inline-block; width: 34px; height: 20px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px;
+            background-color: #9ca3af; transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%;
+        }
+        input:checked + .slider {
+            background: linear-gradient(to right, #ca9ee6, #f4b8e4);
+        }
+        input:checked + .slider:before {
+            transform: translateX(14px); background-color: #141118;
+        }
     </style>
 </head>
 <body class="antialiased relative min-h-screen flex flex-col select-none">
@@ -71,7 +92,7 @@
                 <div class="w-5 h-5 rounded bg-gradient-to-br from-brand-lavender to-brand-rose flex items-center justify-center">
                     <i class="fa-solid fa-robot text-[9px] text-gray-900 font-bold"></i>
                 </div>
-                <span class="font-bold text-xs tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-brand-lavender to-brand-rose">Sayraa Central Remake</span>
+                <span class="font-bold text-xs tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-brand-lavender to-brand-rose">Sayraa Control Centre</span>
             </div>
             <div id="global-status" class="text-[9px] font-semibold text-brand-mint bg-brand-mint/10 px-1.5 py-0.5 rounded border border-brand-mint/10">
                 System Stable
@@ -109,23 +130,35 @@
                         <input type="text" id="username" class="input-elegant font-mono" placeholder="Celeste_Bot" required>
                     </div>
 
-                    <div class="bg-white/[0.01] border border-white/5 rounded-lg p-2 grid grid-cols-2 gap-1.5 text-[10px]">
-                        <label class="flex items-center justify-between bg-white/5 p-1 rounded cursor-pointer">
+                    <div class="bg-white/[0.01] border border-white/5 rounded-lg p-2.5 grid grid-cols-2 gap-2 text-[10px]">
+                        <div class="flex items-center justify-between bg-white/5 p-1 px-1.5 rounded-md">
                             <span class="text-gray-400">Tự vệ</span>
-                            <input type="checkbox" id="autoDefend" class="accent-brand-lavender" checked>
-                        </label>
-                        <label class="flex items-center justify-between bg-white/5 p-1 rounded cursor-pointer">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoDefend" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-white/5 p-1 px-1.5 rounded-md">
                             <span class="text-gray-400">Chống AFK</span>
-                            <input type="checkbox" id="antiAFK" class="accent-brand-lavender" checked>
-                        </label>
-                        <label class="flex items-center justify-between bg-white/5 p-1 rounded cursor-pointer">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="antiAFK" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-white/5 p-1 px-1.5 rounded-md">
                             <span class="text-gray-400">Neo vị trí</span>
-                            <input type="checkbox" id="lockPosition" class="accent-brand-lavender">
-                        </label>
-                        <label class="flex items-center justify-between bg-white/5 p-1 rounded cursor-pointer">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="lockPosition">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between bg-white/5 p-1 px-1.5 rounded-md">
                             <span class="text-gray-400">Chém quái</span>
-                            <input type="checkbox" id="autoAttackMobs" class="accent-brand-lavender">
-                        </label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoAttackMobs">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full py-1.5 rounded-lg bg-gradient-to-r from-brand-lavender to-brand-rose text-gray-900 font-bold text-xs transition-transform active:scale-95">
@@ -152,8 +185,8 @@
                     <span id="current-target-label" class="text-[11px] text-brand-lavender font-mono font-bold">Chưa Target</span>
                 </div>
                 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left text-xs min-w-[300px]">
                         <thead>
                             <tr class="text-[9px] text-gray-400 font-mono border-b border-white/5">
                                 <th class="pb-1">Username</th>
@@ -167,6 +200,42 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div id="quick-settings-panel" class="glass-elegant rounded-xl p-3 hidden border border-brand-lavender/20 animate-slide-up">
+                <h3 class="text-xs font-bold text-brand-lavender mb-2.5 flex items-center gap-1.5">
+                    <i class="fa-solid fa-sliders"></i> Điều Chỉnh Cấu Hình Nóng: <span id="settings-bot-name" class="text-white"></span>
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                    <div class="flex items-center justify-between p-1.5 px-2 rounded bg-white/5 border border-white/5">
+                        <span class="text-gray-400">Tự Vệ</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="update-autoDefend" onchange="pushLiveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between p-1.5 px-2 rounded bg-white/5 border border-white/5">
+                        <span class="text-gray-400">Chống AFK</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="update-antiAFK" onchange="pushLiveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between p-1.5 px-2 rounded bg-white/5 border border-white/5">
+                        <span class="text-gray-400">Neo Vị Trí</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="update-lockPosition" onchange="pushLiveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between p-1.5 px-2 rounded bg-white/5 border border-white/5">
+                        <span class="text-gray-400">Diệt Quái</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="update-autoAttackMobs" onchange="pushLiveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -185,13 +254,15 @@
                             <span id="tel-food" class="font-mono font-bold text-brand-peach">--/20</span>
                         </div>
                     </div>
-                    <div class="bg-white/[0.01] p-2 rounded border border-white/5 flex flex-col justify-center">
-                        <span class="text-gray-400 mb-0.5">Tọa độ chân thực tế:</span>
-                        <div id="tel-coords" class="font-mono text-brand-lavender font-bold">X: -- | Y: -- | Z: --</div>
+                    <div class="bg-white/[0.01] p-2 rounded border border-white/5 flex flex-col justify-center items-start">
+                        <span class="text-gray-400 mb-1">Tọa độ chân thực tế:</span>
+                        <button onclick="copyCoords()" id="tel-coords" class="w-full text-left font-mono text-brand-lavender font-bold bg-brand-lavender/10 hover:bg-brand-lavender/20 border border-brand-lavender/20 rounded py-1 px-2 transition-all active:scale-95 cursor-pointer">
+                            X: -- | Y: -- | Z: --
+                        </button>
                     </div>
                     <div class="bg-white/[0.01] p-2 rounded border border-white/5 flex flex-col justify-center">
                         <span class="text-gray-400 mb-0.5">Mục tiêu AI săn lùng:</span>
-                        <div id="tel-target" class="font-mono text-white font-bold">None</div>
+                        <div id="tel-target" class="font-mono text-white font-bold truncate">None</div>
                     </div>
                     <div class="bg-white/[0.01] p-2 rounded border border-white/5 col-span-1 sm:col-span-3">
                         <span class="text-gray-400 block mb-1">Túi đồ rút gọn (Inventory):</span>
@@ -200,21 +271,11 @@
                 </div>
             </div>
 
-            <div id="quick-settings-panel" class="glass-elegant rounded-xl p-3 hidden border border-brand-lavender/20">
-                <h3 class="text-xs font-bold text-brand-lavender mb-2"><i class="fa-solid fa-sliders"></i> Toggle Settings</h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-                    <label class="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"><span class="text-gray-400">Tự Vệ</span><input type="checkbox" id="update-autoDefend" onchange="pushLiveSettings()"></label>
-                    <label class="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"><span class="text-gray-400">Chống AFK</span><input type="checkbox" id="update-antiAFK" onchange="pushLiveSettings()"></label>
-                    <label class="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"><span class="text-gray-400">Neo Vị Trí</span><input type="checkbox" id="update-lockPosition" onchange="pushLiveSettings()"></label>
-                    <label class="flex items-center justify-between p-1.5 rounded bg-white/5 border border-white/5"><span class="text-gray-400">Diệt Quái</span><input type="checkbox" id="update-autoAttackMobs" onchange="pushLiveSettings()"></label>
-                </div>
-            </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div class="glass-elegant rounded-xl p-2.5 flex flex-col justify-between space-y-1.5">
                     <h3 class="text-xs font-bold text-gray-200"><i class="fa-solid fa-comment text-brand-peach"></i> Tin Nhắn Game</h3>
                     <input type="text" id="chat-msg" class="w-full input-elegant font-mono" placeholder="Nội dung...">
-                    <button onclick="sendAction('chat')" class="w-full py-1 rounded bg-brand-peach/10 text-brand-peach text-xs font-medium border border-brand-peach/20">Gửi</button>
+                    <button onclick="sendAction('chat')" class="w-full py-1 rounded bg-brand-peach/10 text-brand-peach text-xs font-medium border border-brand-peach/20 active:scale-95 transition-transform">Gửi</button>
                 </div>
 
                 <div class="glass-elegant rounded-xl p-2.5 flex flex-col justify-between space-y-1.5">
@@ -224,15 +285,15 @@
                         <input type="number" id="move-y" class="input-elegant text-center p-0.5" placeholder="Y">
                         <input type="number" id="move-z" class="input-elegant text-center p-0.5" placeholder="Z">
                     </div>
-                    <button onclick="sendAction('move')" class="w-full py-1 rounded bg-brand-mint/10 text-brand-mint text-xs font-medium border border-brand-mint/20">Chạy Đến</button>
+                    <button onclick="sendAction('move')" class="w-full py-1 rounded bg-brand-mint/10 text-brand-mint text-xs font-medium border border-brand-mint/20 active:scale-95 transition-transform">Chạy Đến</button>
                 </div>
 
                 <div class="glass-elegant rounded-xl p-2.5 flex flex-col justify-between space-y-1.5">
                     <h3 class="text-xs font-bold text-gray-200"><i class="fa-solid fa-crosshairs text-brand-rose"></i> Săn Mục Tiêu AI</h3>
                     <input type="text" id="hunt-target" class="w-full input-elegant font-mono" placeholder="Tên player/mob...">
                     <div class="grid grid-cols-2 gap-1.5">
-                        <button onclick="sendAction('hunt')" class="py-1 rounded bg-brand-rose/10 text-brand-rose text-xs font-medium border border-brand-rose/20">Săn Đuổi</button>
-                        <button onclick="sendAction('cancel-hunt')" class="py-1 rounded bg-white/5 text-gray-400 text-xs font-medium border border-white/5">Hủy Săn</button>
+                        <button onclick="sendAction('hunt')" class="py-1 rounded bg-brand-rose/10 text-brand-rose text-xs font-medium border border-brand-rose/20 active:scale-95 transition-transform">Săn Đuổi</button>
+                        <button onclick="sendAction('cancel-hunt')" class="py-1 rounded bg-white/5 text-gray-400 text-xs font-medium border border-white/5 active:scale-95 transition-transform">Hủy Săn</button>
                     </div>
                 </div>
             </div>
@@ -253,6 +314,7 @@
         
         let selectedBotId = "all";
         let cachedBotsData = [];
+        let currentLiveBotCoords = null; 
 
         socket.on('connect', () => {
             console.log('Socket Connected');
@@ -268,7 +330,6 @@
             logsBox.scrollTop = logsBox.scrollHeight;
         });
 
-        // LẮNG NGHE ĐO LƯỜNG TỪ BỘ NÃO CHẠY NGẦM ĐỂ UPDATE LÊN TELEMETRY PANEL
         socket.on('bot_telemetry', (data) => {
             if (selectedBotId !== data.bot_id) return;
             
@@ -278,6 +339,8 @@
             document.getElementById('tel-coords').innerText = `X: ${tele.position.x} | Y: ${tele.position.y} | Z: ${tele.position.z}`;
             document.getElementById('tel-target').innerText = tele.target;
             
+            currentLiveBotCoords = tele.position;
+
             if (tele.inventory && tele.inventory.length > 0) {
                 document.getElementById('tel-inv').innerText = tele.inventory.map(i => `${i.name} (${i.count})`).join(', ');
             } else {
@@ -287,7 +350,25 @@
 
         socket.on('bot_status', () => fetchBotList());
 
-        // LẤY GỢI Ý LỆNH TỪ BACKEND
+        // HÀM COPY TỌA ĐỘ VÀO CLIPBOARD KHI BẤM NÚT
+        function copyCoords() {
+            const btn = document.getElementById('tel-coords');
+            const text = btn.innerText;
+            if (text && !text.includes("--")) {
+                navigator.clipboard.writeText(text);
+                
+                // Hiệu ứng đổi màu tạm thời báo thành công
+                const oldClass = btn.className;
+                btn.className = "w-full text-left font-mono text-brand-mint font-bold bg-brand-mint/20 border border-brand-mint/30 rounded py-1 px-2 transition-all cursor-pointer";
+                btn.innerText = "✓ Đã copy tọa độ";
+                
+                setTimeout(() => {
+                    btn.className = oldClass;
+                    btn.innerText = text;
+                }, 1000);
+            }
+        }
+
         async function fetchSuggestions() {
             try {
                 const response = await fetch(`${API_URL}/api/v1/bot/suggestions`);
@@ -304,7 +385,6 @@
             } catch (err) { console.error(err); }
         }
 
-        // TẠO CẤU HÌNH TĨNH CHO BOT
         document.getElementById('spawn-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const payload = {
@@ -329,7 +409,6 @@
             } catch (err) { console.error(err); }
         });
 
-        // TẢI DANH SÁCH BOTS KÈM STATUS ĐỘNG (OFFLINE / CONNECTING / ONLINE)
         async function fetchBotList() {
             try {
                 const response = await fetch(`${API_URL}/api/v1/bot/list`);
@@ -355,13 +434,13 @@
                                 ${bot.username}
                             </td>
                             <td class="py-1.5 text-center text-[10px] font-mono text-gray-400 capitalize">${bot.status}</td>
-                            <td class="py-1.5 text-right space-x-1">
+                            <td class="py-1.5 text-right space-x-1 flex justify-end">
                                 ${bot.status === 'offline' ? 
-                                    `<button onclick="networkAction('${bot.id}', 'connect')" class="px-2 py-0.5 text-[10px] rounded bg-brand-mint text-gray-900 font-bold"><i class="fa-solid fa-plug"></i> Conn</button>` : 
-                                    `<button onclick="quickAction('${bot.id}', 'leave')" class="px-1.5 py-0.5 text-[10px] rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"><i class="fa-solid fa-power-off"></i> Out</button>`
+                                    `<button onclick="networkAction('${bot.id}', 'connect')" class="px-2 py-0.5 text-[10px] rounded bg-brand-mint text-gray-900 font-bold active:scale-95"><i class="fa-solid fa-plug"></i> Conn</button>` : 
+                                    `<button onclick="quickAction('${bot.id}', 'leave')" class="px-1.5 py-0.5 text-[10px] rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 active:scale-95"><i class="fa-solid fa-power-off"></i> Out</button>`
                                 }
-                                <button onclick="selectBot('${bot.id}', '${bot.username}')" class="px-2 py-0.5 text-[10px] rounded border ${selectedBotId === bot.id ? 'bg-brand-lavender text-gray-900 border-brand-lavender font-bold' : 'bg-brand-lavender/5 text-brand-lavender border-brand-lavender/20'}">Chọn</button>
-                                <button onclick="networkAction('${bot.id}', 'remove')" class="px-1.5 py-0.5 text-[10px] rounded bg-red-500/10 text-red-400 border border-red-500/20"><i class="fa-solid fa-trash"></i></button>
+                                <button onclick="selectBot('${bot.id}', '${bot.username}')" class="px-2 py-0.5 text-[10px] rounded border ${selectedBotId === bot.id ? 'bg-brand-lavender text-gray-900 border-brand-lavender font-bold' : 'bg-brand-lavender/5 text-brand-lavender border-brand-lavender/20'} active:scale-95">Chọn</button>
+                                <button onclick="networkAction('${bot.id}', 'remove')" class="px-1.5 py-0.5 text-[10px] rounded bg-red-500/10 text-red-400 border border-red-500/20 active:scale-95"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `;
@@ -374,7 +453,6 @@
             document.getElementById('telemetry-panel').classList.add('hidden');
         }
 
-        // BẤM NÚT CHỌN BOT: ĐỒNG BỘ DATA SETTINGS VÀ HIỆN BẢNG MONITOR ĐO LƯỜNG SINH THỂ
         function selectBot(id, username) {
             selectedBotId = id;
             document.getElementById('current-target-label').innerText = `Target: ${username}`;
@@ -399,7 +477,50 @@
             fetchBotList();
         }
 
-        // KÍCH HOẠT NỐI MẠNG HOẶC XÓA CỨNG BẢN GHI TĨNH
+        async function pushLiveSettings() {
+            if (selectedBotId === "all") return;
+
+            const isLockEnabled = document.getElementById('update-lockPosition').checked;
+            
+            const settingsPayload = {
+                autoDefend: document.getElementById('update-autoDefend').checked,
+                antiAFK: document.getElementById('update-antiAFK').checked,
+                lockPosition: isLockEnabled,
+                autoAttackMobs: document.getElementById('update-autoAttackMobs').checked
+            };
+
+            if (isLockEnabled && currentLiveBotCoords) {
+                try {
+                    await fetch(`${API_URL}/api/v1/bot/move`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            bot_id: selectedBotId,
+                            x: currentLiveBotCoords.x,
+                            y: currentLiveBotCoords.y,
+                            z: currentLiveBotCoords.z
+                        })
+                    });
+                } catch(e) { console.log("Lỗi đồng bộ tọa độ chân neo vị trí:", e); }
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/api/v1/bot/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bot_id: selectedBotId,
+                        settings: settingsPayload
+                    })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    const idx = cachedBotsData.findIndex(b => b.id === selectedBotId);
+                    if(idx !== -1) cachedBotsData[idx].options = data.current_options;
+                }
+            } catch (err) { console.error(err); }
+        }
+
         async function networkAction(botId, action) {
             const endpoint = action === 'connect' ? '/api/v1/bot/connect' : '/api/v1/bot/remove';
             const method = action === 'connect' ? 'POST' : 'DELETE';
@@ -417,31 +538,6 @@
             } catch (err) { console.error(err); }
         }
 
-        async function pushLiveSettings() {
-            if (selectedBotId === "all") return;
-            const updatedPayload = {
-                bot_id: selectedBotId,
-                settings: {
-                    autoDefend: document.getElementById('update-autoDefend').checked,
-                    antiAFK: document.getElementById('update-antiAFK').checked,
-                    lockPosition: document.getElementById('update-lockPosition').checked,
-                    autoAttackMobs: document.getElementById('update-autoAttackMobs').checked
-                }
-            };
-            try {
-                const res = await fetch(`${API_URL}/api/v1/bot/settings`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedPayload)
-                });
-                const data = await res.json();
-                if(data.success) {
-                    const idx = cachedBotsData.findIndex(b => b.id === selectedBotId);
-                    if(idx !== -1) cachedBotsData[idx].options = data.current_options;
-                }
-            } catch (err) { console.error(err); }
-        }
-
         async function sendAction(type) {
             if(selectedBotId === "all") return alert("Vui lòng chọn 1 Bot trước!");
             let endpoint = '';
@@ -451,7 +547,7 @@
                 endpoint = '/api/v1/bot/chat';
                 bodyData.message = document.getElementById('chat-msg').value;
                 if(!bodyData.message) return;
-                document.getElementById('chat-msg').value = ''; // Xóa sạch ô nhập sau khi gửi
+                document.getElementById('chat-msg').value = '';
             } else if (type === 'move') {
                 endpoint = '/api/v1/bot/move';
                 bodyData.x = document.getElementById('move-x').value;
