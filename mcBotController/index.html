@@ -96,74 +96,22 @@
     <main class="relative z-10 flex-grow max-w-7xl mx-auto w-full px-2.5 py-2.5 grid grid-cols-1 lg:grid-cols-3 gap-3">
         
         <div class="lg:col-span-1 space-y-3 animate-slide-up">
-            <div class="glass-elegant rounded-xl p-3">
-                <h2 class="text-xs font-bold mb-2.5 flex items-center gap-1.5 border-b border-white/5 pb-1.5">
-                    <i class="fa-solid fa-folder-plus text-brand-lavender"></i> Quản Lý Cấu Hình Bot
+            <div class="glass-elegant rounded-xl p-4">
+                <h2 class="text-sm font-bold mb-4 flex items-center gap-2 border-b border-white/5 pb-2">
+                    <i class="fa-solid fa-fingerprint text-brand-lavender"></i> Khởi Động Bot Hệ Thống
                 </h2>
                 
-                <form id="spawn-form" class="space-y-2.5">
-                    <div class="flex flex-col gap-1 p-2 rounded-lg bg-brand-lavender/5 border border-brand-lavender/20">
-                        <label class="text-[10px] font-bold text-brand-lavender uppercase flex items-center gap-1">
-                            <i class="fa-solid fa-id-badge"></i> Profile ID (Mã Đăng Nhập)
+                <form id="spawn-form" class="space-y-4">
+                    <div class="flex flex-col gap-2 p-3 rounded-xl bg-brand-lavender/5 border border-brand-lavender/30 shadow-[inset_0_0_20px_rgba(202,158,230,0.02)]">
+                        <label class="text-[11px] font-bold text-brand-lavender uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-key"></i> Key Đăng Nhập (Profile ID)
                         </label>
-                        <input type="text" id="profile_id" class="input-elegant font-mono text-brand-lavender placeholder-brand-lavender/30 border-brand-lavender/30" placeholder="VD: bot_farm_01 (Để trống = Bot tạm thời)">
-                        <p class="text-[9px] text-gray-400 leading-tight">Nhập ID cũ để tải lại bot. Nếu nhập ID mới, hệ thống sẽ lưu cấu hình bên dưới vào ID này.</p>
+                        <input type="text" id="profile_id" class="input-elegant font-mono text-brand-lavender placeholder-brand-lavender/30 border-brand-lavender/50 text-sm py-2" placeholder="VD: bot_farm_01" required>
+                        <p class="text-[10px] text-gray-400 leading-relaxed mt-1">Để bảo vệ tài nguyên máy chủ, hệ thống chỉ cho phép đánh thức các Bot đã được cấp quyền (Whitelist).</p>
                     </div>
 
-                    <div class="flex flex-col gap-0.5">
-                        <label class="text-[9px] font-bold text-gray-400 uppercase">IP Server</label>
-                        <input type="text" id="host" class="input-elegant font-mono" placeholder="mc.sayra.asia" value="localhost" required>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="flex flex-col gap-0.5">
-                            <label class="text-[9px] font-bold text-gray-400 uppercase">Port</label>
-                            <input type="number" id="port" class="input-elegant font-mono" value="25565" required>
-                        </div>
-                        <div class="flex flex-col gap-0.5">
-                            <label class="text-[9px] font-bold text-gray-400 uppercase">Version</label>
-                            <input type="text" id="version" class="input-elegant font-mono" placeholder="Auto">
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-0.5">
-                        <label class="text-[9px] font-bold text-gray-400 uppercase">Tên Nhân Vật (Username)</label>
-                        <input type="text" id="username" class="input-elegant font-mono" placeholder="Celeste_Bot" required>
-                    </div>
-
-                    <div class="bg-white/[0.01] border border-white/5 rounded-lg p-2.5 grid grid-cols-2 gap-2 text-[10px]">
-                        <div class="flex items-center justify-between bg-white/5 p-1 px-1.5 rounded-md">
-                            <span class="text-gray-400">Tự vệ</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="autoDefend" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="flex items-center justify-between bg-white/5 p-1 px-1.5 rounded-md">
-                            <span class="text-gray-400">Chống AFK</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="antiAFK" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="flex items-center justify-between bg-white/5 p-1 px-1.5 rounded-md">
-                            <span class="text-gray-400">Neo vị trí</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="lockPosition">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="flex items-center justify-between bg-white/5 p-1 px-1.5 rounded-md">
-                            <span class="text-gray-400">Chém quái</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="autoAttackMobs">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full py-2 rounded-lg bg-gradient-to-r from-brand-lavender to-brand-rose text-gray-900 font-bold text-xs transition-transform active:scale-95 shadow-[0_0_15px_rgba(202,158,230,0.3)]">
-                        <i class="fa-solid fa-bolt mr-1"></i> Khởi Tạo / Nạp Dữ Liệu
+                    <button type="submit" class="w-full py-2.5 rounded-lg bg-gradient-to-r from-brand-lavender to-brand-rose text-gray-900 font-bold text-xs transition-transform hover:brightness-110 active:scale-95 shadow-[0_0_15px_rgba(202,158,230,0.3)]">
+                        <i class="fa-solid fa-power-off mr-1"></i> Khởi động Bot
                     </button>
                 </form>
             </div>
@@ -220,6 +168,13 @@
                         <span class="text-gray-400">Chống AFK</span>
                         <label class="toggle-switch">
                             <input type="checkbox" id="update-antiAFK" onchange="pushLiveSettings()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between p-1.5 px-2 rounded bg-white/5 border border-white/5">
+                        <span class="text-gray-400">Enable AI</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="update-enableAI" onchange="pushLiveSettings()">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -310,6 +265,7 @@
 
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script>
+        // TRỎ ĐÚNG IP SERVER EXPRESS CỦA BÁC Ở ĐÂY 
         const API_URL = "https://api.sayraa.xyz";
         const socket = io(API_URL, { transports: ['websocket'] });
         
@@ -385,18 +341,16 @@
         document.getElementById('spawn-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // GẮN THÊM BIẾN PROFILE_ID VÀO PAYLOAD GỬI ĐI
+            const profileId = document.getElementById('profile_id').value.trim();
+            if (!profileId) {
+                alert("Bạn cần phải nhập Profile ID để gọi bot!");
+                return;
+            }
+
             const payload = {
-                profile_id: document.getElementById('profile_id').value.trim() || undefined,
-                host: document.getElementById('host').value,
-                port: parseInt(document.getElementById('port').value),
-                username: document.getElementById('username').value,
-                version: document.getElementById('version').value || false,
-                autoDefend: document.getElementById('autoDefend').checked,
-                antiAFK: document.getElementById('antiAFK').checked,
-                lockPosition: document.getElementById('lockPosition').checked,
-                autoAttackMobs: document.getElementById('autoAttackMobs').checked,
-                autoLeaveLowHealth: true
+                profile_id: profileId
+                // Các thông số host, port, v.v... đã bị gỡ bỏ. 
+                // Backend sẽ tự đọc từ file bot_profiles.json dựa trên ID này.
             };
 
             try {
@@ -406,9 +360,7 @@
                     body: JSON.stringify(payload)
                 });
                 
-                // Reset ô ID để tránh nhầm lẫn khi tạo bot tiếp theo
                 document.getElementById('profile_id').value = '';
-                
                 fetchBotList();
             } catch (err) { console.error(err); }
         });
@@ -431,7 +383,6 @@
                     if (bot.status === 'spawned') statusColor = 'bg-brand-mint';
                     else if (bot.status === 'connecting') statusColor = 'bg-brand-lavender animate-pulse';
 
-                    // Hiển thị thêm (ID) trên bảng để dễ phân biệt
                     const displayId = bot.id.length > 15 ? bot.id.substring(0,8) + '...' : bot.id;
 
                     return `
@@ -476,6 +427,11 @@
                 document.getElementById('update-lockPosition').checked = targetBot.options.lockPosition ?? false;
                 document.getElementById('update-autoAttackMobs').checked = targetBot.options.autoAttackMobs ?? false;
                 
+                // Mới thêm: Đồng bộ toggle AI với trạng thái bot
+                if (document.getElementById('update-enableAI')) {
+                    document.getElementById('update-enableAI').checked = targetBot.options.enableAI ?? true;
+                }
+                
                 document.getElementById('quick-settings-panel').classList.remove('hidden');
                 
                 if (targetBot.status === 'spawned') {
@@ -496,7 +452,8 @@
                 autoDefend: document.getElementById('update-autoDefend').checked,
                 antiAFK: document.getElementById('update-antiAFK').checked,
                 lockPosition: isLockEnabled,
-                autoAttackMobs: document.getElementById('update-autoAttackMobs').checked
+                autoAttackMobs: document.getElementById('update-autoAttackMobs').checked,
+                enableAI: document.getElementById('update-enableAI') ? document.getElementById('update-enableAI').checked : true
             };
 
             if (isLockEnabled && currentLiveBotCoords) {
