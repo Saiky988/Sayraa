@@ -60,10 +60,7 @@
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #3a3145; border-radius: 10px; }
 
-        /* Custom mượt mà cho nút gạt Toggle Switch CSS */
-        .toggle-switch {
-            position: relative; inline-block; width: 34px; height: 20px;
-        }
+        .toggle-switch { position: relative; inline-block; width: 34px; height: 20px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
@@ -74,12 +71,8 @@
             position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px;
             background-color: #9ca3af; transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%;
         }
-        input:checked + .slider {
-            background: linear-gradient(to right, #ca9ee6, #f4b8e4);
-        }
-        input:checked + .slider:before {
-            transform: translateX(14px); background-color: #141118;
-        }
+        input:checked + .slider { background: linear-gradient(to right, #ca9ee6, #f4b8e4); }
+        input:checked + .slider:before { transform: translateX(14px); background-color: #141118; }
     </style>
 </head>
 <body class="antialiased relative min-h-screen flex flex-col select-none">
@@ -105,10 +98,18 @@
         <div class="lg:col-span-1 space-y-3 animate-slide-up">
             <div class="glass-elegant rounded-xl p-3">
                 <h2 class="text-xs font-bold mb-2.5 flex items-center gap-1.5 border-b border-white/5 pb-1.5">
-                    <i class="fa-solid fa-folder-plus text-brand-lavender"></i> Đăng Ký Cấu Hình Bot
+                    <i class="fa-solid fa-folder-plus text-brand-lavender"></i> Quản Lý Cấu Hình Bot
                 </h2>
                 
-                <form id="spawn-form" class="space-y-2">
+                <form id="spawn-form" class="space-y-2.5">
+                    <div class="flex flex-col gap-1 p-2 rounded-lg bg-brand-lavender/5 border border-brand-lavender/20">
+                        <label class="text-[10px] font-bold text-brand-lavender uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-id-badge"></i> Profile ID (Mã Đăng Nhập)
+                        </label>
+                        <input type="text" id="profile_id" class="input-elegant font-mono text-brand-lavender placeholder-brand-lavender/30 border-brand-lavender/30" placeholder="VD: bot_farm_01 (Để trống = Bot tạm thời)">
+                        <p class="text-[9px] text-gray-400 leading-tight">Nhập ID cũ để tải lại bot. Nếu nhập ID mới, hệ thống sẽ lưu cấu hình bên dưới vào ID này.</p>
+                    </div>
+
                     <div class="flex flex-col gap-0.5">
                         <label class="text-[9px] font-bold text-gray-400 uppercase">IP Server</label>
                         <input type="text" id="host" class="input-elegant font-mono" placeholder="mc.sayra.asia" value="localhost" required>
@@ -121,7 +122,7 @@
                         </div>
                         <div class="flex flex-col gap-0.5">
                             <label class="text-[9px] font-bold text-gray-400 uppercase">Version</label>
-                            <input type="text" id="version" class="input-elegant font-mono" placeholder="1.20.1">
+                            <input type="text" id="version" class="input-elegant font-mono" placeholder="Auto">
                         </div>
                     </div>
 
@@ -161,8 +162,8 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full py-1.5 rounded-lg bg-gradient-to-r from-brand-lavender to-brand-rose text-gray-900 font-bold text-xs transition-transform active:scale-95">
-                        <i class="fa-solid fa-save mr-1"></i> Lưu Cấu Hình Tĩnh
+                    <button type="submit" class="w-full py-2 rounded-lg bg-gradient-to-r from-brand-lavender to-brand-rose text-gray-900 font-bold text-xs transition-transform active:scale-95 shadow-[0_0_15px_rgba(202,158,230,0.3)]">
+                        <i class="fa-solid fa-bolt mr-1"></i> Khởi Tạo / Nạp Dữ Liệu
                     </button>
                 </form>
             </div>
@@ -189,7 +190,7 @@
                     <table class="w-full text-left text-xs min-w-[300px]">
                         <thead>
                             <tr class="text-[9px] text-gray-400 font-mono border-b border-white/5">
-                                <th class="pb-1">Username</th>
+                                <th class="pb-1">Username (ID)</th>
                                 <th class="pb-1 text-center">Trạng thái</th>
                                 <th class="pb-1 text-right">Điều phối mạng</th>
                             </tr>
@@ -350,18 +351,14 @@
 
         socket.on('bot_status', () => fetchBotList());
 
-        // HÀM COPY TỌA ĐỘ VÀO CLIPBOARD KHI BẤM NÚT
         function copyCoords() {
             const btn = document.getElementById('tel-coords');
             const text = btn.innerText;
             if (text && !text.includes("--")) {
                 navigator.clipboard.writeText(text);
-                
-                // Hiệu ứng đổi màu tạm thời báo thành công
                 const oldClass = btn.className;
                 btn.className = "w-full text-left font-mono text-brand-mint font-bold bg-brand-mint/20 border border-brand-mint/30 rounded py-1 px-2 transition-all cursor-pointer";
                 btn.innerText = "✓ Đã copy tọa độ";
-                
                 setTimeout(() => {
                     btn.className = oldClass;
                     btn.innerText = text;
@@ -387,7 +384,10 @@
 
         document.getElementById('spawn-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // GẮN THÊM BIẾN PROFILE_ID VÀO PAYLOAD GỬI ĐI
             const payload = {
+                profile_id: document.getElementById('profile_id').value.trim() || undefined,
                 host: document.getElementById('host').value,
                 port: parseInt(document.getElementById('port').value),
                 username: document.getElementById('username').value,
@@ -405,6 +405,10 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                
+                // Reset ô ID để tránh nhầm lẫn khi tạo bot tiếp theo
+                document.getElementById('profile_id').value = '';
+                
                 fetchBotList();
             } catch (err) { console.error(err); }
         });
@@ -427,14 +431,20 @@
                     if (bot.status === 'spawned') statusColor = 'bg-brand-mint';
                     else if (bot.status === 'connecting') statusColor = 'bg-brand-lavender animate-pulse';
 
+                    // Hiển thị thêm (ID) trên bảng để dễ phân biệt
+                    const displayId = bot.id.length > 15 ? bot.id.substring(0,8) + '...' : bot.id;
+
                     return `
                         <tr class="border-b border-white/5 text-xs ${selectedBotId === bot.id ? 'bg-white/5' : ''}">
-                            <td class="py-1.5 font-semibold text-gray-200 flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full ${statusColor}"></span>
-                                ${bot.username}
+                            <td class="py-1.5 font-semibold text-gray-200 flex flex-col justify-center">
+                                <div class="flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full ${statusColor}"></span>
+                                    <span>${bot.username}</span>
+                                </div>
+                                <span class="text-[9px] text-brand-lavender ml-2.5 font-mono opacity-80">${displayId}</span>
                             </td>
                             <td class="py-1.5 text-center text-[10px] font-mono text-gray-400 capitalize">${bot.status}</td>
-                            <td class="py-1.5 text-right space-x-1 flex justify-end">
+                            <td class="py-1.5 text-right space-x-1 flex justify-end items-center h-full">
                                 ${bot.status === 'offline' ? 
                                     `<button onclick="networkAction('${bot.id}', 'connect')" class="px-2 py-0.5 text-[10px] rounded bg-brand-mint text-gray-900 font-bold active:scale-95"><i class="fa-solid fa-plug"></i> Conn</button>` : 
                                     `<button onclick="quickAction('${bot.id}', 'leave')" class="px-1.5 py-0.5 text-[10px] rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 active:scale-95"><i class="fa-solid fa-power-off"></i> Out</button>`
