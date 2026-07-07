@@ -1,538 +1,1056 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sayraa | Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Sayraa</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg:#08090b;
+    --bg-soft:#0c0e11;
+    --surface: rgba(255,255,255,0.045);
+    --surface-solid:#15171b;
+    --surface-solid-2:#1b1e23;
+    --line: rgba(255,255,255,0.08);
+    --line-strong: rgba(255,255,255,0.14);
+    --text:#f0f1f4;
+    --text-dim:#989ca6;
+    --text-faint:#5b5f68;
+    --accent:#7c6ff0;
+    --accent-soft: rgba(124,111,240,0.14);
+    --teal:#34d6b4;
+    --amber:#f5a623;
+    --rose:#f4586b;
+    --discord:#5865f2;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-tap-highlight-color:transparent;}
+  body{
+    background:
+      radial-gradient(900px 500px at 15% -10%, rgba(124,111,240,0.12), transparent 60%),
+      radial-gradient(700px 500px at 110% 10%, rgba(52,214,180,0.07), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .display{font-family:'Plus Jakarta Sans',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  ::selection{background:var(--accent); color:#fff;}
+  ::-webkit-scrollbar{width:6px; height:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--line-strong); border-radius:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:6px;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:.001s !important; transition-duration:.001s !important;} }
 
-    <meta name="description" content="Real-time server resource monitoring system. Intuitive, sophisticated interface and outstanding performance.">
-    <meta name="keywords" content="sayraa, sayraa.xyz, dashboard">
-    <meta name="author" content="Sayraa">
-    <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#1e1e28">
+  .glass{
+    background:var(--surface);
+    border:1px solid var(--line);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .glass-solid{ background:var(--surface-solid); border:1px solid var(--line); }
 
-    <link rel="canonical" href="https://sayraa.xyz/" id="canonical-url">
+  /* ---- drawer ---- */
+  #drawer{
+    position:fixed; inset:0 auto 0 0; width:280px; z-index:60;
+    background:var(--surface-solid); border-right:1px solid var(--line);
+    transform:translateX(-100%); transition:transform .38s cubic-bezier(.16,1,.3,1);
+    display:flex; flex-direction:column;
+  }
+  #drawer.open{ transform:translateX(0); }
+  @media (min-width:1024px){
+    #drawer{ position:sticky; top:0; height:100vh; transform:none; z-index:10; }
+    #drawer-overlay{ display:none !important; }
+  }
+  #drawer-overlay{
+    position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.55);
+    opacity:0; pointer-events:none; transition:opacity .3s ease;
+  }
+  #drawer-overlay.open{ opacity:1; pointer-events:auto; }
 
-    <meta property="og:type" content="dashboard">
-    <meta property="og:url" content="https://sayraa.xyz/">
-    <meta property="og:title" content="Sayraa Dashboard">
-    <meta property="og:description" content="Real-time server resource monitoring system. Intuitive, sophisticated interface and outstanding performance.">
+  .nav-link{ display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:12px; color:var(--text-dim); font-size:14.5px; font-weight:500; transition:background .2s ease, color .2s ease; }
+  .nav-link i{ width:18px; text-align:center; font-size:15px; }
+  .nav-link:hover{ background:rgba(255,255,255,0.04); color:var(--text); }
+  .nav-link.active{ background:var(--accent-soft); color:#fff; }
+  .nav-link.active i{ color:var(--accent); }
+  .nav-sub{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 14px 9px 40px; border-radius:10px; color:var(--text-dim); font-size:13.5px; transition:background .2s ease, color .2s ease; }
+  .nav-sub:hover{ background:rgba(255,255,255,0.04); color:var(--text); }
+  .nav-sub.active{ color:#fff; background:rgba(255,255,255,0.05); }
+  .nav-group-label{ font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); padding:16px 14px 6px; }
+  .chev{ transition:transform .25s ease; font-size:11px; color:var(--text-faint); }
+  .group.open .chev{ transform:rotate(90deg); }
+  .group-body{ max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .group.open .group-body{ max-height:400px; }
 
-    <meta property="twitter:card" content="summary">
-    <meta property="twitter:url" content="https://sayraa.xyz/">
-    <meta property="twitter:title" content="Sayraa Dashboard">
-    <meta property="twitter:description" content="Real-time server resource monitoring system. Intuitive, sophisticated interface and outstanding performance.">
+  /* ---- topbar / bottom tabs ---- */
+  #topbar{ position:sticky; top:0; z-index:30; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); background:rgba(8,9,11,.7); border-bottom:1px solid var(--line); }
+  #bottom-tabs{ position:fixed; bottom:0; left:0; right:0; z-index:40; padding-bottom:env(safe-area-inset-bottom); }
+  @media (min-width:1024px){ #bottom-tabs{ display:none; } }
+  .tab-btn{ display:flex; flex-direction:column; align-items:center; gap:3px; padding:9px 0; color:var(--text-faint); font-size:10.5px; font-weight:500; flex:1; }
+  .tab-btn i{ font-size:17px; }
+  .tab-btn.active{ color:var(--accent); }
 
-    <!-- === FAVICON === -->
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- Odometer CSS (For sliding numbers) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/themes/odometer-theme-minimal.min.css" />
+  /* ---- views ---- */
+  .view{ display:none; }
+  .view.active{ display:block; animation:riseIn .45s cubic-bezier(.16,1,.3,1); }
+  @keyframes riseIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { 
-                        sans: ['Outfit', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    },
-                    colors: {
-                        base: '#141118', /* Deep purple-black */
-                        surface: 'rgba(255, 255, 255, 0.03)',
-                        surfaceHover: 'rgba(255, 255, 255, 0.08)',
-                        brand: { 
-                            rose: '#f4b8e4',    /* Soft Rose */
-                            lavender: '#ca9ee6', /* Lavender */
-                            peach: '#efc1c4',   /* Peach */
-                            mint: '#8bd5ca'     /* Mint for success */
-                        }
-                    },
-                    animation: {
-                        'float-slow': 'float 8s ease-in-out infinite',
-                        'float-med': 'float 6s ease-in-out infinite reverse',
-                        'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                        'glow-pulse': 'glowPulse 3s infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
-                            '33%': { transform: 'translate(30px, -50px) rotate(10deg)' },
-                            '66%': { transform: 'translate(-20px, 20px) rotate(-5deg)' }
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(40px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        glowPulse: {
-                            '0%, 100%': { opacity: 0.5 },
-                            '50%': { opacity: 1 }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+  /* ---- cards ---- */
+  .card{ border-radius:20px; }
+  .module-card{ position:relative; overflow:hidden; transition:border-color .25s ease, transform .25s ease; }
+  .module-card:active{ transform:scale(.985); }
+  .icon-tile{ width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .status-dot{ width:7px; height:7px; border-radius:50%; display:inline-block; position:relative; }
+  .status-dot.on{ background:var(--teal); box-shadow:0 0 0 0 rgba(52,214,180,.6); animation:pulse 2.2s infinite; }
+  .status-dot.soon{ background:var(--text-faint); }
+  .status-dot.warn{ background:var(--amber); }
+  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(52,214,180,.55);} 70%{box-shadow:0 0 0 7px rgba(52,214,180,0);} 100%{box-shadow:0 0 0 0 rgba(52,214,180,0);} }
 
-    <style>
-        body {
-            background-color: #141118;
-            color: #e5e7eb;
-            overflow-x: hidden;
-        }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; font-weight:600; font-size:13.5px; border-radius:13px; padding:11px 18px; transition:filter .2s ease, transform .15s ease; }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{ background:linear-gradient(180deg, #8b7ff5, var(--accent)); color:#fff; box-shadow:0 6px 18px -4px rgba(124,111,240,.5); }
+  .btn-primary:hover{ filter:brightness(1.08); }
+  .btn-ghost{ background:rgba(255,255,255,0.05); border:1px solid var(--line); color:var(--text); }
+  .btn-ghost:hover{ background:rgba(255,255,255,0.08); }
+  .btn-danger{ background:rgba(244,88,107,0.12); color:var(--rose); border:1px solid rgba(244,88,107,0.25); }
+  .btn-sm{ padding:8px 13px; font-size:12.5px; border-radius:10px; }
 
-        /* Nền Gradient mượt mà */
-        .bg-mesh {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: 0; pointer-events: none;
-            background: radial-gradient(circle at 15% 50%, rgba(202, 158, 230, 0.05), transparent 25%),
-                        radial-gradient(circle at 85% 30%, rgba(244, 184, 228, 0.05), transparent 25%);
-        }
+  .pill{ font-size:11px; font-weight:600; padding:4px 10px; border-radius:999px; letter-spacing:.02em; }
+  .input{ width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:14px; color:var(--text); transition:border-color .2s ease; }
+  .input:focus{ border-color:var(--accent); outline:none; }
+  .input::placeholder{ color:var(--text-faint); }
 
-        /* Glassmorphism tinh tế (Elegant Glass) */
-        .glass-elegant {
-            background: var(--surface);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            border-left: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
+  /* ---- bottom sheet ---- */
+  #sheet-overlay{ position:fixed; inset:0; z-index:70; background:rgba(0,0,0,.6); opacity:0; pointer-events:none; transition:opacity .3s ease; }
+  #sheet-overlay.open{ opacity:1; pointer-events:auto; }
+  #sheet{
+    position:fixed; left:0; right:0; bottom:0; z-index:80; max-width:520px; margin:0 auto;
+    background:var(--surface-solid-2); border:1px solid var(--line); border-bottom:none;
+    border-radius:24px 24px 0 0; transform:translateY(100%); transition:transform .4s cubic-bezier(.16,1,.3,1);
+    max-height:86vh; overflow-y:auto; padding:10px 22px calc(26px + env(safe-area-inset-bottom));
+  }
+  #sheet.open{ transform:translateY(0); }
+  .sheet-handle{ width:36px; height:4px; border-radius:99px; background:var(--line-strong); margin:8px auto 16px; }
 
-        .glass-elegant:hover {
-            background: var(--surfaceHover);
-            border-color: rgba(202, 158, 230, 0.3);
-            box-shadow: 0 15px 45px -10px rgba(202, 158, 230, 0.15);
-        }
+  /* ---- toast ---- */
+  #toast-wrap{ position:fixed; top:calc(14px + env(safe-area-inset-top)); left:0; right:0; z-index:90; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; }
+  .toast{ pointer-events:auto; display:flex; align-items:center; gap:10px; padding:11px 16px; border-radius:13px; font-size:13px; font-weight:500; background:var(--surface-solid-2); border:1px solid var(--line-strong); box-shadow:0 12px 30px -8px rgba(0,0,0,.5); animation:toastIn .35s cubic-bezier(.16,1,.3,1); max-width:88vw; }
+  @keyframes toastIn{ from{opacity:0; transform:translateY(-10px) scale(.97);} to{opacity:1; transform:translateY(0) scale(1);} }
 
-        /* Odometer Customization (Làm cho số trượt đẹp hơn) */
-        .odometer {
-            font-family: 'JetBrains Mono', monospace !important;
-            font-weight: 700;
-        }
-        .odometer-digit {
-            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-        }
+  .skel{ background:linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.09), rgba(255,255,255,.04)); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:10px; }
+  @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
 
-        /* Custom Scrollbar nữ tính */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #141118; }
-        ::-webkit-scrollbar-thumb { background: #3a3145; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #ca9ee6; }
+  .tab-pill{ font-size:13px; font-weight:600; padding:8px 15px; border-radius:11px; color:var(--text-dim); white-space:nowrap; transition:background .2s ease,color .2s ease; }
+  .tab-pill.active{ background:var(--accent-soft); color:#fff; }
 
-        /* Ping dot */
-        .status-dot {
-            position: relative; display: inline-flex; width: 8px; height: 8px;
-        }
-        .status-dot .ping {
-            position: absolute; width: 100%; height: 100%;
-            border-radius: 50%; background-color: #8bd5ca;
-            opacity: 0.8; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-        }
-        .status-dot .dot {
-            position: relative; width: 100%; height: 100%;
-            border-radius: 50%; background-color: #8bd5ca; box-shadow: 0 0 10px #8bd5ca;
-        }
+  .provider-google{ color:#e8e9ec; }
+  .provider-discord{ color:var(--discord); }
+  .provider-github{ color:#e8e9ec; }
 
-        /* Staggered Animations */
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
-        .delay-400 { animation-delay: 400ms; }
-        
-        .hide-initially { opacity: 0; }
-    </style>
+  .switch{ width:42px; height:24px; border-radius:99px; background:rgba(255,255,255,.08); border:1px solid var(--line); position:relative; transition:background .2s ease; flex-shrink:0; }
+  .switch.on{ background:var(--accent); border-color:var(--accent); }
+  .switch::after{ content:''; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#fff; transition:transform .2s ease; }
+  .switch.on::after{ transform:translateX(18px); }
+
+  .accent-swatch{ width:26px; height:26px; border-radius:50%; border:2px solid transparent; transition:border-color .2s ease; }
+  .accent-swatch.active{ border-color:#fff; }
+</style>
 </head>
-<body class="antialiased relative min-h-screen flex flex-col">
+<body class="min-h-screen">
 
-    <!-- Orbs Background (Hiệu ứng đồ sộ chìm) -->
-    <div class="bg-mesh"></div>
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-15%] left-[-10%] w-[40rem] h-[40rem] bg-brand-lavender rounded-full mix-blend-screen filter blur-[150px] opacity-[0.08] animate-float-slow"></div>
-        <div class="absolute top-[30%] right-[-15%] w-[35rem] h-[35rem] bg-brand-rose rounded-full mix-blend-screen filter blur-[140px] opacity-[0.06] animate-float-med"></div>
-        <div class="absolute bottom-[-20%] left-[20%] w-[45rem] h-[45rem] bg-brand-peach rounded-full mix-blend-screen filter blur-[160px] opacity-[0.05] animate-float-slow" style="animation-delay: -3s;"></div>
+<div id="toast-wrap"></div>
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+<div id="sheet-overlay" onclick="closeSheet()"></div>
+
+<div class="flex min-h-screen">
+
+  <!-- DRAWER -->
+  <aside id="drawer">
+    <div class="flex items-center gap-2.5 px-5 py-5 border-b" style="border-color:var(--line)">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:linear-gradient(140deg,#8b7ff5,var(--accent))">
+        <i class="fa-solid fa-bolt text-white text-sm"></i>
+      </div>
+      <span class="display font-extrabold text-[17px] tracking-tight">Sayraa</span>
+      <button onclick="closeDrawer()" class="ml-auto lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-[--text-dim] hover:bg-white/5">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
 
-    <!-- Navigation -->
-    <nav class="relative z-10 w-full border-b border-white/5 bg-base/40 backdrop-blur-xl animate-slide-up hide-initially">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-4 cursor-pointer group">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-lavender to-brand-rose flex items-center justify-center shadow-[0_0_20px_rgba(202,158,230,0.3)] group-hover:shadow-[0_0_30px_rgba(244,184,228,0.5)] transition-all duration-500">
-                    <i class="fa-solid fa-gem text-base text-white"></i>
-                </div>
-                <span class="font-bold text-xl tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-brand-lavender to-brand-rose">Sayraa.xyz</span>
-            </div>
-            <div class="flex items-center gap-6 text-sm font-medium text-gray-400">
-                <a href="#" class="hover:text-brand-rose transition-colors duration-300 hidden md:block">Documentation</a>
-                <a href="#" class="hover:text-brand-lavender transition-colors duration-300 hidden md:block">API Keys</a>
-                <div class="h-10 w-10 rounded-full bg-surface border border-white/10 flex items-center justify-center hover:border-brand-rose hover:bg-white/5 transition-all duration-300 cursor-pointer text-gray-300 hover:text-white shadow-lg">
-                    <i class="fa-regular fa-face-smile-wink"></i>
-                </div>
-            </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-3">
+      <a class="nav-link active" data-route="dashboard" onclick="navigate('dashboard')">
+        <i class="fa-solid fa-chart-line"></i> Dashboard
+      </a>
+
+      <div class="nav-group-label">Games</div>
+      <div class="group open">
+        <div class="nav-link" onclick="toggleGroup(this)">
+          <i class="fa-solid fa-gamepad"></i> Games <i class="fa-solid fa-chevron-right chev ml-auto"></i>
         </div>
+        <div class="group-body">
+          <a class="nav-sub" data-route="genshin" onclick="navigate('genshin')">Genshin Impact <span class="status-dot on"></span></a>
+          <a class="nav-sub" data-route="hsr" onclick="navigate('hsr')">Honkai Star Rail <span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-faint)">Soon</span></a>
+          <a class="nav-sub" data-route="zzz" onclick="navigate('zzz')">Zenless Zone Zero <span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-faint)">Soon</span></a>
+        </div>
+      </div>
+
+      <div class="nav-group-label">Developer</div>
+      <div class="group">
+        <div class="nav-link" onclick="toggleGroup(this)">
+          <i class="fa-solid fa-code"></i> Developer <i class="fa-solid fa-chevron-right chev ml-auto"></i>
+        </div>
+        <div class="group-body">
+          <a class="nav-sub" data-route="downloader" onclick="navigate('downloader')">Downloader <span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-faint)">Soon</span></a>
+          <a class="nav-sub" data-route="apis" onclick="navigate('apis')">APIs <span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-faint)">Soon</span></a>
+          <a class="nav-sub" data-route="translation" onclick="navigate('translation')">Translation <span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-faint)">Soon</span></a>
+          <a class="nav-sub" data-route="ai" onclick="navigate('ai')">AI Tools <span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-faint)">Soon</span></a>
+          <a class="nav-sub" data-route="image" onclick="navigate('image')">Image Tools <span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-faint)">Soon</span></a>
+        </div>
+      </div>
+
+      <div class="nav-group-label">General</div>
+      <a class="nav-link" data-route="settings" onclick="navigate('settings')">
+        <i class="fa-solid fa-gear"></i> Settings
+      </a>
     </nav>
 
-    <!-- Main Content -->
-    <main class="relative z-10 flex-grow max-w-7xl mx-auto w-full px-6 py-12">
-        
-        <!-- Header Section -->
-        <section class="mb-16 text-center lg:text-left flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div class="max-w-2xl animate-slide-up hide-initially delay-100">
-                <div class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-brand-mint/10 border border-brand-mint/20 text-brand-mint text-xs font-semibold uppercase tracking-widest mb-6 shadow-[0_0_15px_rgba(139,213,202,0.1)]">
-                    <span class="status-dot"><span class="ping"></span><span class="dot"></span></span>
-                    System Core Active
-                </div>
-                <h1 class="text-5xl lg:text-7xl font-extrabold mb-6 leading-[1.1] tracking-tight">
-                    Manage with <br />
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-lavender via-brand-rose to-brand-peach">Elegance.</span>
-                </h1>
-                <p class="text-gray-400 text-lg mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0 font-light">
-                    Real-time server resource monitoring system. Intuitive, sophisticated interface and outstanding performance.
-                </p>
-                <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
-                    <button class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-brand-lavender to-brand-rose text-base font-bold text-gray-900 hover:shadow-[0_0_30px_rgba(202,158,230,0.4)] hover:scale-105 transition-all duration-300">
-                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> Optimize Now
-                    </button>
-                    <button class="px-8 py-3.5 rounded-2xl glass-elegant text-white font-semibold hover:bg-white/10 transition-all duration-300">
-                        <i class="fa-solid fa-sliders mr-2"></i> Settings
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Uptime Card (3D Tilt) -->
-            <div class="glass-elegant rounded-[2rem] p-8 w-full lg:w-96 relative overflow-hidden group animate-slide-up hide-initially delay-200" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
-                <div class="absolute top-0 right-0 w-40 h-40 bg-brand-lavender/20 rounded-full blur-3xl group-hover:bg-brand-rose/20 transition-colors duration-700"></div>
-                <h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-3">Kyous Host Status</h3>
-                <div class="text-4xl font-bold text-white mb-6 font-mono tracking-tight" id="uptimeText">Syncing...</div>
-                <div class="w-full bg-white/5 h-1.5 rounded-full mb-4 overflow-hidden">
-                    <div class="h-full bg-gradient-to-r from-brand-mint to-brand-lavender w-full animate-glow-pulse"></div>
-                </div>
-                <div class="flex items-center gap-2 text-sm text-gray-300">
-                    <i class="fa-solid fa-shield-check text-brand-mint"></i> Infrastructure stable
-                </div>
-            </div>
-        </section>
+    <div class="px-4 py-4 border-t" style="border-color:var(--line)" id="drawer-account">
+      <!-- filled by JS -->
+    </div>
+  </aside>
 
-        <!-- Stats Grid (Hiệu ứng Odometer trượt số & 3D Tilt) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            <!-- CPU -->
-            <div class="glass-elegant rounded-[2rem] p-6 relative overflow-hidden group animate-slide-up hide-initially delay-200" data-tilt data-tilt-max="10" data-tilt-scale="1.02">
-                <div class="absolute -right-6 -top-6 text-brand-lavender/10 text-8xl transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"><i class="fa-solid fa-microchip"></i></div>
-                <div class="w-12 h-12 rounded-2xl bg-brand-lavender/10 border border-brand-lavender/20 flex items-center justify-center text-brand-lavender mb-4 shadow-[0_0_15px_rgba(202,158,230,0.2)]">
-                    <i class="fa-solid fa-bolt"></i>
-                </div>
-                <h3 class="text-gray-400 text-sm font-medium mb-1">CPU Usage</h3>
-                <div class="flex items-baseline gap-1">
-                    <div class="text-4xl font-bold text-white odometer" id="cpuOdo">0</div>
-                    <span class="text-xl font-bold text-brand-lavender">%</span>
-                </div>
-            </div>
+  <!-- MAIN -->
+  <div class="flex-1 min-w-0 flex flex-col">
+    <header id="topbar" class="flex items-center gap-3 px-4 py-3.5 lg:px-7">
+      <button onclick="openDrawer()" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center glass">
+        <i class="fa-solid fa-bars text-[15px]"></i>
+      </button>
+      <div>
+        <div class="text-[15px] font-semibold" id="topbar-title">Dashboard</div>
+        <div class="text-[11.5px] mono" style="color:var(--text-faint)" id="topbar-sub">All systems operational</div>
+      </div>
+      <div class="ml-auto flex items-center gap-2.5">
+        <button onclick="showToast('info','No new notifications')" class="w-9 h-9 rounded-xl flex items-center justify-center glass relative">
+          <i class="fa-regular fa-bell text-[14px]"></i>
+          <span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full" style="background:var(--rose)"></span>
+        </button>
+        <button onclick="handleAvatarClick()" id="avatar-btn" class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center glass font-semibold text-[13px]">?</button>
+      </div>
+    </header>
 
-            <!-- RAM -->
-            <div class="glass-elegant rounded-[2rem] p-6 relative overflow-hidden group animate-slide-up hide-initially delay-300" data-tilt data-tilt-max="10" data-tilt-scale="1.02">
-                <div class="absolute -right-6 -top-6 text-brand-rose/10 text-8xl transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"><i class="fa-solid fa-memory"></i></div>
-                <div class="w-12 h-12 rounded-2xl bg-brand-rose/10 border border-brand-rose/20 flex items-center justify-center text-brand-rose mb-4 shadow-[0_0_15px_rgba(244,184,228,0.2)]">
-                    <i class="fa-solid fa-layer-group"></i>
-                </div>
-                <h3 class="text-gray-400 text-sm font-medium mb-1">RAM Memory</h3>
-                <div class="flex items-baseline gap-1">
-                    <div class="text-4xl font-bold text-white odometer" id="ramOdo">0</div>
-                    <span class="text-xl font-bold text-brand-rose">%</span>
-                </div>
-            </div>
+    <main class="flex-1 px-4 py-5 lg:px-7 lg:py-7 pb-28 lg:pb-10 max-w-5xl w-full">
 
-            <!-- DISK -->
-            <div class="glass-elegant rounded-[2rem] p-6 relative overflow-hidden group animate-slide-up hide-initially delay-400" data-tilt data-tilt-max="10" data-tilt-scale="1.02">
-                <div class="absolute -right-6 -top-6 text-brand-peach/10 text-8xl transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"><i class="fa-solid fa-hard-drive"></i></div>
-                <div class="w-12 h-12 rounded-2xl bg-brand-peach/10 border border-brand-peach/20 flex items-center justify-center text-brand-peach mb-4 shadow-[0_0_15px_rgba(239,193,196,0.2)]">
-                    <i class="fa-solid fa-database"></i>
-                </div>
-                <h3 class="text-gray-400 text-sm font-medium mb-1">Disk I/O</h3>
-                <div class="flex items-baseline gap-1">
-                    <div class="text-4xl font-bold text-white odometer" id="diskOdo">0</div>
-                    <span class="text-xl font-bold text-brand-peach">%</span>
-                </div>
-            </div>
-
-            <!-- NETWORK (Custom Odometer text logic) -->
-            <div class="glass-elegant rounded-[2rem] p-6 relative overflow-hidden group animate-slide-up hide-initially delay-400" data-tilt data-tilt-max="10" data-tilt-scale="1.02">
-                <div class="absolute -right-6 -top-6 text-brand-mint/10 text-8xl transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"><i class="fa-solid fa-network-wired"></i></div>
-                <div class="w-12 h-12 rounded-2xl bg-brand-mint/10 border border-brand-mint/20 flex items-center justify-center text-brand-mint mb-3 shadow-[0_0_15px_rgba(139,213,202,0.2)]">
-                    <i class="fa-solid fa-globe"></i>
-                </div>
-                <h3 class="text-gray-400 text-sm font-medium mb-3">Network Traffic</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-arrow-down text-brand-rose"></i> In</span>
-                        <div class="flex items-baseline gap-1">
-                            <span class="font-mono font-bold text-white odometer text-lg" id="netInOdo">0</span>
-                            <span class="text-xs text-gray-500" id="netInUnit">KB</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-gray-400 flex items-center gap-1"><i class="fa-solid fa-arrow-up text-brand-lavender"></i> Out</span>
-                        <div class="flex items-baseline gap-1">
-                            <span class="font-mono font-bold text-white odometer text-lg" id="netOutOdo">0</span>
-                            <span class="text-xs text-gray-500" id="netOutUnit">KB</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- DASHBOARD VIEW -->
+      <section class="view active" data-view="dashboard">
+        <div class="mb-6">
+          <h1 class="display text-[26px] font-extrabold tracking-tight" id="dash-greeting">Good to see you</h1>
+          <p class="text-[13.5px] mt-1" style="color:var(--text-dim)">Here's what's happening across your services.</p>
         </div>
 
-        <!-- Charts Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="glass-elegant rounded-[2rem] p-6 flex flex-col animate-slide-up hide-initially delay-200" data-tilt data-tilt-max="2" data-tilt-glare data-tilt-max-glare="0.1">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-base font-semibold text-gray-200">CPU Stream</h3>
-                    <span class="w-2 h-2 rounded-full bg-brand-lavender animate-pulse"></span>
-                </div>
-                <div class="relative w-full flex-grow h-[220px]">
-                    <canvas id="cpuChart"></canvas>
-                </div>
-            </div>
-            
-            <div class="glass-elegant rounded-[2rem] p-6 flex flex-col animate-slide-up hide-initially delay-300" data-tilt data-tilt-max="2" data-tilt-glare data-tilt-max-glare="0.1">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-base font-semibold text-gray-200">Memory Allocation</h3>
-                    <span class="w-2 h-2 rounded-full bg-brand-rose animate-pulse"></span>
-                </div>
-                <div class="relative w-full flex-grow h-[220px]">
-                    <canvas id="ramChart"></canvas>
-                </div>
-            </div>
-            
-            <div class="glass-elegant rounded-[2rem] p-6 flex flex-col animate-slide-up hide-initially delay-400" data-tilt data-tilt-max="2" data-tilt-glare data-tilt-max-glare="0.1">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-base font-semibold text-gray-200">Storage Activity</h3>
-                    <span class="w-2 h-2 rounded-full bg-brand-peach animate-pulse"></span>
-                </div>
-                <div class="relative w-full flex-grow h-[220px]">
-                    <canvas id="diskChart"></canvas>
-                </div>
-            </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-7">
+          <div class="glass card p-4">
+            <div class="text-[11px]" style="color:var(--text-faint)">Modules live</div>
+            <div class="display text-[22px] font-extrabold mt-1">2</div>
+          </div>
+          <div class="glass card p-4">
+            <div class="text-[11px]" style="color:var(--text-faint)">In development</div>
+            <div class="display text-[22px] font-extrabold mt-1">9</div>
+          </div>
+          <div class="glass card p-4">
+            <div class="text-[11px]" style="color:var(--text-faint)">Account status</div>
+            <div class="display text-[15px] font-bold mt-1.5" id="dash-account-status">Guest</div>
+          </div>
+          <div class="glass card p-4">
+            <div class="text-[11px]" style="color:var(--text-faint)">API health</div>
+            <div class="display text-[15px] font-bold mt-1.5 flex items-center gap-1.5"><span class="status-dot on"></span>Online</div>
+          </div>
         </div>
+
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="display text-[15px] font-bold">Services</h2>
+        </div>
+        <div id="dashboard-grid" class="grid sm:grid-cols-2 gap-3"></div>
+      </section>
+
+      <!-- GENSHIN VIEW -->
+      <section class="view" data-view="genshin">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="icon-tile overflow-hidden" style="background:rgba(245,166,35,.14); color:var(--amber)">
+            <img src="https://static.wikia.nocookie.net/gensin-impact/images/8/80/Genshin_Impact.png/revision/latest?cb=20240331104358" alt="Genshin Impact" class="w-7 h-7 object-contain" />
+          </div>
+          <div>
+            <h1 class="display text-[21px] font-extrabold">Genshin Impact</h1>
+            <p class="text-[12.5px]" style="color:var(--text-dim)">Banners, gift codes, check-in &amp; account stats</p>
+          </div>
+        </div>
+
+        <div class="flex gap-1.5 overflow-x-auto mb-5 -mx-1 px-1" id="genshin-tabs">
+          <button class="tab-pill active" onclick="genshinTab('banners', this)">Banners</button>
+          <button class="tab-pill" onclick="genshinTab('codes', this)">Gift Codes</button>
+          <button class="tab-pill" onclick="genshinTab('checkin', this)">Daily Check-in</button>
+          <button class="tab-pill" onclick="genshinTab('redeem', this)">Redeem</button>
+          <button class="tab-pill" onclick="genshinTab('stats', this)">Role Stats</button>
+          <button class="tab-pill" onclick="genshinTab('calendar', this)">Rewards Calendar</button>
+        </div>
+
+        <div id="genshin-panel"></div>
+      </section>
+
+      <!-- COMING SOON TEMPLATE VIEWS -->
+      <template id="tpl-coming-soon"></template>
+      <section class="view" data-view="hsr" data-title="Honkai Star Rail" data-icon="fa-train" data-color="var(--slate,#7c8db3)"></section>
+      <section class="view" data-view="zzz" data-title="Zenless Zone Zero" data-icon="fa-bolt-lightning"></section>
+      <section class="view" data-view="downloader" data-title="Downloader" data-icon="fa-download"></section>
+      <section class="view" data-view="apis" data-title="Developer APIs" data-icon="fa-plug"></section>
+      <section class="view" data-view="translation" data-title="Translation" data-icon="fa-language"></section>
+      <section class="view" data-view="ai" data-title="AI Tools" data-icon="fa-sparkles"></section>
+      <section class="view" data-view="image" data-title="Image Tools" data-icon="fa-image"></section>
+
+      <!-- SETTINGS VIEW -->
+      <section class="view" data-view="settings">
+        <h1 class="display text-[21px] font-extrabold mb-5">Settings</h1>
+
+        <div class="mb-3 text-[12px] font-semibold uppercase tracking-wide" style="color:var(--text-faint)">Profile</div>
+        <div class="glass card p-4 mb-6">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xl glass" id="settings-avatar">?</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold text-[15px]" id="settings-name">Not signed in</div>
+              <div class="text-[12.5px] truncate" style="color:var(--text-dim)" id="settings-email">Sign in to sync your account</div>
+            </div>
+          </div>
+          <div class="flex gap-2 mt-4" id="settings-auth-actions"></div>
+        </div>
+
+        <div class="mb-3 text-[12px] font-semibold uppercase tracking-wide" style="color:var(--text-faint)">Connected Providers</div>
+        <div class="glass card p-2 mb-6" id="providers-list"></div>
+
+        <div class="mb-3 text-[12px] font-semibold uppercase tracking-wide" style="color:var(--text-faint)">API</div>
+        <div class="glass card p-4 mb-6 space-y-3">
+          <div>
+            <div class="text-[12px] mb-1.5" style="color:var(--text-dim)">JWT Token</div>
+            <div class="flex items-center gap-2">
+              <div class="input mono text-[11.5px] truncate" id="jwt-display" style="color:var(--text-dim)">— sign in to generate —</div>
+              <button class="btn btn-ghost btn-sm" onclick="copyToken()"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-1">
+            <div>
+              <div class="text-[13.5px] font-medium">Developer Mode</div>
+              <div class="text-[11.5px]" style="color:var(--text-faint)">Show raw API responses</div>
+            </div>
+            <div class="switch" id="dev-mode-switch" onclick="toggleSwitch(this,'devMode')"></div>
+          </div>
+        </div>
+
+        <div class="mb-3 text-[12px] font-semibold uppercase tracking-wide" style="color:var(--text-faint)">Theme</div>
+        <div class="glass card p-4 mb-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-[13.5px] font-medium">Dark Mode</div>
+              <div class="text-[11.5px]" style="color:var(--text-faint)">Sayraa is designed dark-first</div>
+            </div>
+            <div class="switch on" onclick="showToast('info','Light mode is coming in a future update')"></div>
+          </div>
+          <div>
+            <div class="text-[13.5px] font-medium mb-2.5">Accent Color</div>
+            <div class="flex gap-2.5" id="accent-swatches"></div>
+          </div>
+        </div>
+
+        <div class="mb-3 text-[12px] font-semibold uppercase tracking-wide" style="color:var(--text-faint)">About</div>
+        <div class="glass card divide-y" style="--tw-divide-opacity:1; border-color:var(--line)">
+          <div class="flex items-center justify-between px-4 py-3 text-[13.5px]"><span style="color:var(--text-dim)">App Version</span><span class="mono">2.4.0</span></div>
+          <div class="flex items-center justify-between px-4 py-3 text-[13.5px]" style="border-color:var(--line)"><span style="color:var(--text-dim)">API Version</span><span class="mono">v1</span></div>
+          <div class="flex items-center justify-between px-4 py-3 text-[13.5px]" style="border-color:var(--line)"><span style="color:var(--text-dim)">Backend Status</span><span class="flex items-center gap-1.5"><span class="status-dot on"></span>Operational</span></div>
+        </div>
+      </section>
 
     </main>
+  </div>
+</div>
 
-    <footer class="relative z-10 mt-auto py-8 border-t border-white/5 bg-base/50">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
-            <p>&copy; 2026 Sayraa Core. Designed with elegance.</p>
-            <div class="flex items-center gap-6">
-                <a href="#" class="hover:text-brand-rose transition-colors duration-300">Privacy</a>
-                <a href="#" class="hover:text-brand-lavender transition-colors duration-300">Terms</a>
-                <a href="#" class="hover:text-brand-peach transition-colors duration-300">Status</a>
-            </div>
+<!-- BOTTOM TABS (mobile) -->
+<nav id="bottom-tabs" class="glass-solid flex items-stretch border-t" style="border-color:var(--line)">
+  <button class="tab-btn active" data-route="dashboard" onclick="navigate('dashboard')"><i class="fa-solid fa-chart-line"></i>Dashboard</button>
+  <button class="tab-btn" data-route="genshin" onclick="navigate('genshin')"><i class="fa-solid fa-gamepad"></i>Games</button>
+  <button class="tab-btn" data-route="apis" onclick="navigate('apis')"><i class="fa-solid fa-code"></i>Developer</button>
+  <button class="tab-btn" data-route="settings" onclick="navigate('settings')"><i class="fa-solid fa-gear"></i>Settings</button>
+</nav>
+
+<!-- BOTTOM SHEET -->
+<div id="sheet">
+  <div class="sheet-handle"></div>
+  <div id="sheet-content"></div>
+</div>
+
+<script>
+/* ============ STATE (in-memory only, no localStorage) ============ */
+const Sayraa = {
+  user: null, // {name, email, avatar, providers:[], token}
+  devMode: false,
+  accent: '#7c6ff0',
+  currentRoute: 'dashboard',
+};
+
+const ACCENTS = ['#7c6ff0','#34d6b4','#f5a623','#f4586b','#5aa7ef'];
+
+const MODULES = [
+  { id:'auth', route:'settings', name:'Authentication', icon:'fa-fingerprint', color:'#7c6ff0', live:true, desc:'OAuth login & account linking across providers.', activity:'Ready — no active session' },
+  { id:'genshin', route:'genshin', name:'Genshin Impact', icon:'https://static.wikia.nocookie.net/gensin-impact/images/8/80/Genshin_Impact.png/revision/latest?cb=20240331104358', color:'#f5a623', live:true, desc:'Banners, codes, check-in & role stats.', activity:'Banner data synced 2m ago' },
+  { id:'downloader', route:'downloader', name:'Downloader', icon:'fa-download', color:'#5aa7ef', live:false, desc:'Save video & audio from any link.', activity:'In development' },
+  { id:'apis', route:'apis', name:'Developer API', icon:'fa-plug', color:'#34d6b4', live:false, desc:'Test and explore Sayraa endpoints.', activity:'In development' },
+  { id:'translation', route:'translation', name:'Translation', icon:'fa-language', color:'#f4586b', live:false, desc:'Translate text across 40+ languages.', activity:'In development' },
+  { id:'ai', route:'ai', name:'AI Tools', icon:'fa-sparkles', color:'#c99a5b', live:false, desc:'Chat, summarize and generate with AI.', activity:'In development' },
+  { id:'image', route:'image', name:'Image Tools', icon:'fa-image', color:'#8b9a68', live:false, desc:'Compress, convert and edit images.', activity:'In development' },
+];
+
+/* ============ DRAWER ============ */
+function openDrawer(){ document.getElementById('drawer').classList.add('open'); document.getElementById('drawer-overlay').classList.add('open'); }
+function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('drawer-overlay').classList.remove('open'); }
+function toggleGroup(el){ el.parentElement.classList.toggle('open'); }
+
+/* ============ ROUTER ============ */
+const ROUTE_META = {
+  dashboard:{title:'Dashboard', sub:'All systems operational'},
+  genshin:{title:'Genshin Impact', sub:'2 endpoints synced'},
+  hsr:{title:'Honkai Star Rail', sub:'Coming soon'},
+  zzz:{title:'Zenless Zone Zero', sub:'Coming soon'},
+  downloader:{title:'Downloader', sub:'Coming soon'},
+  apis:{title:'Developer APIs', sub:'Coming soon'},
+  translation:{title:'Translation', sub:'Coming soon'},
+  ai:{title:'AI Tools', sub:'Coming soon'},
+  image:{title:'Image Tools', sub:'Coming soon'},
+  settings:{title:'Settings', sub:'Manage your account'},
+};
+
+function navigate(route){
+  Sayraa.currentRoute = route;
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.dataset.view===route));
+  document.querySelectorAll('.nav-link,.nav-sub').forEach(l=>l.classList.toggle('active', l.dataset.route===route));
+  document.querySelectorAll('.tab-btn').forEach(l=>l.classList.toggle('active', l.dataset.route===route));
+  const meta = ROUTE_META[route] || {title:route, sub:''};
+  document.getElementById('topbar-title').textContent = meta.title;
+  document.getElementById('topbar-sub').textContent = meta.sub;
+  closeDrawer();
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  const soonSection = document.querySelector(`section[data-view="${route}"][data-icon]`);
+  if(soonSection && !soonSection.dataset.rendered) renderComingSoon(soonSection);
+}
+
+function renderComingSoon(section){
+  section.dataset.rendered = '1';
+  const title = section.dataset.title;
+  const icon = section.dataset.icon;
+  section.innerHTML = `
+    <div class="flex items-center gap-3 mb-6">
+      <div class="icon-tile" style="background:rgba(124,111,240,.12); color:var(--accent)"><i class="fa-solid ${icon}"></i></div>
+      <div>
+        <h1 class="display text-[21px] font-extrabold">${title}</h1>
+        <p class="text-[12.5px]" style="color:var(--text-dim)">This module is being built</p>
+      </div>
+    </div>
+    <div class="glass card p-8 text-center">
+      <div class="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-4" style="background:rgba(255,255,255,.05)">
+        <i class="fa-solid fa-hammer text-[20px]" style="color:var(--text-dim)"></i>
+      </div>
+      <h3 class="display font-bold text-[16px] mb-1.5">${title} is on the way</h3>
+      <p class="text-[13px] max-w-sm mx-auto mb-5" style="color:var(--text-dim)">We're building this module with the same tools you already use in Genshin Impact — check-in, codes, and stats, all in one place.</p>
+      <button class="btn btn-primary" onclick="notifyMe('${title}')"><i class="fa-regular fa-bell"></i> Notify me at launch</button>
+    </div>`;
+}
+
+function notifyMe(name){ showToast('success', `You'll be notified when ${name} launches`); }
+
+/* ============ TOASTS ============ */
+function showToast(type, msg){
+  const icons = {success:'fa-circle-check', error:'fa-circle-exclamation', info:'fa-circle-info'};
+  const colors = {success:'var(--teal)', error:'var(--rose)', info:'var(--accent)'};
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<i class="fa-solid ${icons[type]||icons.info}" style="color:${colors[type]||colors.info}"></i><span>${msg}</span>`;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s ease, transform .3s ease'; el.style.opacity='0'; el.style.transform='translateY(-8px)'; setTimeout(()=>el.remove(), 300); }, 2600);
+}
+
+/* ============ BOTTOM SHEET ============ */
+function openSheet(html){
+  document.getElementById('sheet-content').innerHTML = html;
+  document.getElementById('sheet').classList.add('open');
+  document.getElementById('sheet-overlay').classList.add('open');
+}
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('open');
+  document.getElementById('sheet-overlay').classList.remove('open');
+}
+
+/* ============ DASHBOARD ============ */
+function renderDashboard(){
+  const grid = document.getElementById('dashboard-grid');
+  grid.innerHTML = MODULES.map(m => {
+    const isUrl = m.icon.startsWith('http://') || m.icon.startsWith('https://');
+    const iconContent = isUrl 
+      ? `<img src="${m.icon}" alt="${m.name}" class="w-6 h-6 object-contain" />`
+      : `<i class="fa-solid ${m.icon}"></i>`;
+
+    return `
+    <div class="glass module-card card p-4 cursor-pointer" onclick="navigate('${m.route}')">
+      <div class="flex items-start gap-3.5">
+        <div class="icon-tile" style="background:${m.color}22; color:${m.color}">
+          ${iconContent}
         </div>
-    </footer>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <h3 class="font-semibold text-[14.5px]">${m.name}</h3>
+            <span class="status-dot ${m.live?'on':'soon'}"></span>
+          </div>
+          <p class="text-[12px] mt-0.5" style="color:var(--text-dim)">${m.desc}</p>
+          <div class="flex items-center justify-between mt-3">
+            <span class="text-[11px] mono" style="color:var(--text-faint)">${m.activity}</span>
+            <span class="text-[12px] font-semibold" style="color:${m.live?m.color:'var(--text-faint)'}">${m.live?'Open':'Soon'} <i class="fa-solid fa-chevron-right text-[9px] ml-0.5"></i></span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-    <!-- Scripts -->
-    <!-- Vanilla Tilt cho hiệu ứng 3D Card Hover -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
-    <!-- Odometer JS cho hiệu ứng trượt số -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.8/odometer.min.js"></script>
-    <!-- Socket.io -->
-    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+/* ============ AUTH (REAL IMPLEMENTATION CONNECTED TO API) ============ */
+const OAUTH_BASE = 'https://api.sayraa.xyz/api/v1/auth';
+const PROVIDERS = [
+  {id:'google', name:'Google', icon:'fa-brands fa-google', color:'#ea4335'},
+  {id:'discord', name:'Discord', icon:'fa-brands fa-discord', color:'#5865f2'},
+  {id:'github', name:'GitHub', icon:'fa-brands fa-github', color:'#e8e9ec'},
+];
+
+// Mở bảng chọn phương thức đăng nhập
+function openLoginSheet(){
+  openSheet(`
+    <h3 class="display font-bold text-[17px] mb-1">Sign in to Sayraa</h3>
+    <p class="text-[13px] mb-5" style="color:var(--text-dim)">Choose a provider to continue. You'll be redirected to authorize, then brought back automatically.</p>
+    <div class="space-y-2.5 mb-2">
+      ${PROVIDERS.map(p=>`
+        <button class="btn btn-ghost w-full !justify-start" onclick="startOAuth('${p.id}')">
+          <i class="${p.icon} text-[16px]" style="color:${p.color}"></i>
+          <span>Continue with ${p.name}</span>
+        </button>`).join('')}
+    </div>
+    <p class="text-[11px] text-center mt-4" style="color:var(--text-faint)">Secure authentication via api.sayraa.xyz</p>
+  `);
+}
+
+// Bắt đầu luồng chuyển hướng OAuth2 (Hỗ trợ cả Đăng nhập lẫn Link Account)
+function startOAuth(providerId, linkToken){
+  const p = PROVIDERS.find(x=>x.id===providerId);
+  const url = new URL(`${OAUTH_BASE}/login/${providerId}`);
+  
+  // Nếu có linkToken tức là đang ở trang Settings và muốn liên kết thêm tài khoản
+  if(linkToken) url.searchParams.set('token', linkToken);
+  
+  closeSheet();
+  showToast('info', `Redirecting to ${p.name}…`);
+  
+  // Chuyển hướng toàn trang sang API để thực hiện handshake với nhà cung cấp
+  setTimeout(() => {
+    window.location.href = url.toString();
+  }, 800);
+}
+
+// Hàm bổ trợ giải mã JWT Token ở Frontend để lấy thông tin User từ Database
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch(e) {
+    return null;
+  }
+}
+
+// Hàm kiểm tra URL xem Backend có vừa trả dữ liệu về không
+async function checkOAuthCallback(){
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const linkStatus = params.get('link');
+  const error = params.get('error');
+
+  // TRƯỜNG HỢP 1: ĐĂNG NHẬP THÀNH CÔNG (Nhận JWT từ Server)
+  if(token){
+    const payload = parseJwt(token); // Giải mã token để lấy data thật từ MySQL
+    if (payload) {
+      Sayraa.user = {
+        name: payload.username || 'User',
+        email: payload.email || 'No email provided',
+        avatar: (payload.username || 'U')[0].toUpperCase(),
+        providers: payload.providers || [payload.provider], // Mảng danh sách các mạng đã liên kết
+        token: token
+      };
+      // Lưu token vào sessionStorage để tải lại trang không bị mất login
+      sessionStorage.setItem('sayraa_token', token);
+      sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
+      
+      showToast('success', `Welcome back, ${Sayraa.user.name}!`);
+    }
+    // Xóa query params trên thanh địa chỉ cho sạch web
+    history.replaceState({}, '', window.location.pathname);
+  } 
+  
+  // TRƯỜNG HỢP 2: LIÊN KẾT TÀI KHOẢN THÀNH CÔNG (Link Account)
+  else if(linkStatus === 'success'){
+    const targetProvider = params.get('provider');
+    showToast('success', `Linked ${targetProvider.toUpperCase()} successfully!`);
     
-    <script>
-        // Init Odometer Configurations
-        window.odometerOptions = {
-            format: '(,ddd).dd', // Cho phép số thập phân trượt mượt
-            duration: 1000,
-            theme: 'minimal'
-        };
+    // Đồng bộ lại trạng thái local (Thêm provider mới vào danh sách hiển thị)
+    if(Sayraa.user && !Sayraa.user.providers.includes(targetProvider)){
+      Sayraa.user.providers.push(targetProvider);
+      sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
+    }
+    history.replaceState({}, '', window.location.pathname);
+  } 
+  
+  // TRƯỜNG HỢP 3: THẤT BẠI / BỊ TRÙNG TÀI KHOẢN KHÁC
+  else if(error){
+    showToast('error', decodeURIComponent(error));
+    history.replaceState({}, '', window.location.pathname);
+  }
+}
 
-        // Hàm tách chuỗi "12.5 MB" thành số 12.5 và đơn vị "MB" cho Network Odometer
-        function parseNetworkString(str) {
-            const match = str.match(/([\d.]+)\s*([a-zA-Z]+)/);
-            if(match) return { val: parseFloat(match[1]), unit: match[2] };
-            return { val: 0, unit: 'KB' };
-        }
+// Gọi API gửi yêu cầu gỡ liên kết (Unlink) lên Backend
+async function confirmUnlink(providerId){
+  const p = PROVIDERS.find(x=>x.id===providerId);
+  closeSheet();
+  
+  try {
+    const response = await fetch(`${OAUTH_BASE}/unlink/${providerId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Sayraa.user.token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const resData = await response.json();
+    
+    if (!response.ok) {
+      showToast('error', resData.error || 'Failed to unlink provider');
+      return;
+    }
+    
+    // Cập nhật giao diện sau khi xóa thành công trong MySQL
+    Sayraa.user.providers = Sayraa.user.providers.filter(id=>id!==providerId);
+    sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
+    showToast('success', `Unlinked ${p.name} successfully.`);
+    renderAuthUI();
+  } catch (err) {
+    showToast('error', 'Network error, please try again.');
+  }
+}
 
-        // Tạo Gradient cho Chart.js
-        function getGradient(ctx, chartArea, colorHex) {
-            let gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-            gradient.addColorStop(0, `${colorHex}00`); 
-            gradient.addColorStop(1, `${colorHex}40`); // Soft opacity
-            return gradient;
-        }
+// Đăng xuất hoàn toàn khỏi hệ thống
+function logout(){
+  openSheet(`
+    <h3 class="display font-bold text-[16px] mb-2">Log out of Sayraa?</h3>
+    <p class="text-[13px] mb-5" style="color:var(--text-dim)">You can sign back in anytime with any linked provider.</p>
+    <div class="flex gap-2.5">
+      <button class="btn btn-ghost flex-1" onclick="closeSheet()">Cancel</button>
+      <button class="btn btn-danger flex-1" onclick="performLogout()">Log out</button>
+    </div>
+  `);
+}
 
-        // Cấu hình Chart.js siêu mượt, nữ tính
-        function buildChart(id, color) {
-            return new Chart(document.getElementById(id), {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        borderColor: color,
-                        backgroundColor: function(context) {
-                            const chart = context.chart;
-                            const {ctx, chartArea} = chart;
-                            if (!chartArea) return null;
-                            return getGradient(ctx, chartArea, color);
-                        },
-                        fill: true,
-                        tension: 0,
-                        borderWidth: 1,
-                        pointRadius: 0, 
-                        pointHoverRadius: 8,
-                        pointBackgroundColor: '#141118',
-                        pointBorderColor: color,
-                        pointBorderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: { duration: 600, easing: 'easeOutQuart' }, 
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(20, 17, 24, 0.95)',
-                            titleColor: '#ca9ee6',
-                            bodyColor: '#fff',
-                            bodyFont: { family: 'JetBrains Mono', size: 14 },
-                            borderColor: 'rgba(202, 158, 230, 0.2)',
-                            borderWidth: 1,
-                            padding: 16,
-                            displayColors: false,
-                            cornerRadius: 12,
-                            callbacks: {
-                                label: function(context) { return context.parsed.y + '%'; }
-                            }
-                        }
-                    },
-                    interaction: { mode: 'nearest', axis: 'x', intersect: false },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { display: false } // Giấu trục X cho thiết kế clean hơn
-                        },
-                        y: {
-                            min: 0, max: 100, 
-                            grid: { 
-                                color: 'rgba(255, 255, 255, 0.04)', 
-                                drawBorder: false
-                            },
-                            ticks: { 
-                                color: '#6b7280', 
-                                stepSize: 25, 
-                                font: { size: 11, family: 'Outfit' },
-                                padding: 10,
-                                callback: function(value) { return value + '%' } 
-                            }
-                        }
-                    }
-                }
-            });
-        }
+function performLogout() {
+  Sayraa.user = null;
+  sessionStorage.removeItem('sayraa_token');
+  sessionStorage.removeItem('sayraa_user');
+  closeSheet();
+  renderAuthUI();
+  showToast('info', 'Logged out');
+  navigate('dashboard');
+}
 
-        const cpuChart = buildChart('cpuChart', '#ca9ee6');   // Lavender
-        const ramChart = buildChart('ramChart', '#f4b8e4');   // Rose
-        const diskChart = buildChart('diskChart', '#efc1c4'); // Peach
+function unlinkProvider(providerId){
+  const p = PROVIDERS.find(x=>x.id===providerId);
+  openSheet(`
+    <h3 class="display font-bold text-[16px] mb-2">Unlink ${p.name}?</h3>
+    <p class="text-[13px] mb-5" style="color:var(--text-dim)">You'll no longer be able to sign in with ${p.name}. This won't affect your other linked providers.</p>
+    <div class="flex gap-2.5">
+      <button class="btn btn-ghost flex-1" onclick="closeSheet()">Cancel</button>
+      <button class="btn btn-danger flex-1" onclick="confirmUnlink('${providerId}')">Unlink</button>
+    </div>
+  `);
+}
 
-        function pushData(chart, label, value) {
-            chart.data.labels.push(label);
-            chart.data.datasets[0].data.push(value);
-            if (chart.data.labels.length > 20) {
-                chart.data.labels.shift();
-                chart.data.datasets[0].data.shift();
-            }
-            chart.update('none'); 
-        }
+function copyToken(){
+  if(!Sayraa.user){ showToast('error', 'Sign in to generate a token'); return; }
+  navigator.clipboard?.writeText(Sayraa.user.token).catch(()=>{});
+  showToast('success', 'Token copied to clipboard');
+}
 
-        /* --- DEMO MODE (Trượt số liên tục giả lập data nếu Socket chưa kết nối) --- */
-        let demoInterval;
-        function startDemoEffects() {
-            demoInterval = setInterval(() => {
-                document.getElementById('cpuOdo').innerHTML = (Math.random() * 40 + 10).toFixed(1);
-                document.getElementById('ramOdo').innerHTML = (Math.random() * 20 + 60).toFixed(1);
-                document.getElementById('diskOdo').innerHTML = (Math.random() * 5 + 40).toFixed(1);
-                
-                document.getElementById('netInOdo').innerHTML = Math.floor(Math.random() * 900);
-                document.getElementById('netOutOdo').innerHTML = Math.floor(Math.random() * 500);
-                
-                const timeStr = new Date().toLocaleTimeString();
-                pushData(cpuChart, timeStr, Math.random() * 40 + 10);
-                pushData(ramChart, timeStr, Math.random() * 20 + 60);
-                pushData(diskChart, timeStr, Math.random() * 5 + 40);
-            }, 3000);
-        }
-        // Chạy demo để bạn thấy hiệu ứng ngay lập tức
-        startDemoEffects();
+function handleAvatarClick(){
+  if(Sayraa.user){ navigate('settings'); } else { openLoginSheet(); }
+}
 
-        /* --- SOCKET LOGIC --- */
-        const socket = io('https://api.sayraa.xyz', { transports: ['websocket'] });
-        let isFirstLoad = true;
+function toggleSwitch(el, key){
+  el.classList.toggle('on');
+  Sayraa[key] = el.classList.contains('on');
+  showToast('info', `Developer mode ${Sayraa[key] ? 'enabled' : 'disabled'}`);
+}
 
-        socket.on('connect', () => {
-            console.log('Realtime Core Elegance Connected!');
-            document.getElementById('uptimeText').innerHTML = 'Syncing...';
-        });
+function renderAuthUI(){
+  const u = Sayraa.user;
+  // topbar avatar
+  document.getElementById('avatar-btn').textContent = u ? u.avatar : '?';
+  // dashboard greeting
+  document.getElementById('dash-greeting').textContent = u ? `Welcome back, ${u.name.split(' ')[0].split('#')[0]}` : 'Good to see you';
+  document.getElementById('dash-account-status').textContent = u ? 'Signed in' : 'Guest';
 
-        socket.on('system_realtime_update', (json) => {
-            if (!json.success) return;
-            
-            // Dừng Demo khi có data thật
-            if(demoInterval) { clearInterval(demoInterval); demoInterval = null; }
+  // drawer account block
+  document.getElementById('drawer-account').innerHTML = u ? `
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center font-semibold text-[13px] glass">${u.avatar}</div>
+      <div class="min-w-0 flex-1">
+        <div class="text-[13px] font-semibold truncate">${u.name}</div>
+        <div class="text-[11px] truncate" style="color:var(--text-faint)">${u.email}</div>
+      </div>
+      <button onclick="logout()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/5" style="color:var(--text-dim)"><i class="fa-solid fa-arrow-right-from-bracket text-[13px]"></i></button>
+    </div>
+  ` : `
+    <button class="btn btn-primary w-full" onclick="openLoginSheet()"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
+  `;
 
-            const stats = json.panel_stats;
+  // settings page
+  document.getElementById('settings-avatar').textContent = u ? u.avatar : '?';
+  document.getElementById('settings-name').textContent = u ? u.name : 'Not signed in';
+  document.getElementById('settings-email').textContent = u ? u.email : 'Sign in to sync your account';
+  document.getElementById('settings-auth-actions').innerHTML = u
+    ? `<button class="btn btn-danger btn-sm" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</button>`
+    : `<button class="btn btn-primary btn-sm" onclick="openLoginSheet()"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>`;
 
-            // Update Odometers (Odometer tự tạo animation trượt số)
-            document.getElementById('cpuOdo').innerHTML = stats.cpu.used_percent;
-            document.getElementById('ramOdo').innerHTML = stats.ram.usage_percent;
-            document.getElementById('diskOdo').innerHTML = stats.disk.usage_percent;
-            
-            // Network Odometer xử lý số và chữ riêng biệt
-            const netIn = parseNetworkString(stats.network.inbound);
-            const netOut = parseNetworkString(stats.network.outbound);
-            
-            document.getElementById('netInOdo').innerHTML = netIn.val;
-            document.getElementById('netInUnit').innerText = netIn.unit;
-            
-            document.getElementById('netOutOdo').innerHTML = netOut.val;
-            document.getElementById('netOutUnit').innerText = netOut.unit;
+  document.getElementById('jwt-display').textContent = u ? u.token : '— sign in to generate —';
 
-            document.getElementById('uptimeText').textContent = json.api_info.app_uptime;
+  document.getElementById('providers-list').innerHTML = PROVIDERS.map(p=>{
+    const linked = u && u.providers.includes(p.id);
+    return `
+    <div class="flex items-center gap-3 px-3 py-3">
+      <i class="${p.icon} text-[18px] w-6 text-center" style="color:${p.color}"></i>
+      <div class="flex-1">
+        <div class="text-[13.5px] font-medium">${p.name}</div>
+        <div class="text-[11px]" style="color:var(--text-faint)">${linked ? 'Connected' : 'Not connected'}</div>
+      </div>
+      ${!u ? `<button class="btn btn-ghost btn-sm" onclick="openLoginSheet()">Connect</button>`
+        : linked ? `<button class="btn btn-ghost btn-sm" onclick="unlinkProvider('${p.id}')">Disconnect</button>`
+        : `<button class="btn btn-ghost btn-sm" onclick="startOAuth('${p.id}', Sayraa.user.token)">Connect</button>`}
+    </div>`;
+  }).join('<div class="border-t" style="border-color:var(--line)"></div>');
+}
 
-            // Chart Updates
-            if (isFirstLoad && json.history_chart_data && json.history_chart_data.length > 0) {
-                const history = json.history_chart_data.slice(-20);
-                history.forEach(point => {
-                    const timeStr = point.time;
-                    const ramPercent = (point.app_ram_mb * 1024 * 1024 / stats.ram.limit_bytes) * 100;
-                    pushData(cpuChart, timeStr, point.app_cpu_percent);
-                    pushData(ramChart, timeStr, parseFloat(ramPercent.toFixed(2)));
-                    pushData(diskChart, timeStr, stats.disk.usage_percent); 
-                });
-                isFirstLoad = false;
-            } else if (!isFirstLoad && json.history_chart_data.length > 0) {
-                const latestPoint = json.history_chart_data[json.history_chart_data.length - 1];
-                const timeString = latestPoint.time;
-                pushData(cpuChart, timeString, stats.cpu.used_percent);
-                pushData(ramChart, timeString, stats.ram.usage_percent);
-                pushData(diskChart, timeString, stats.disk.usage_percent);
-            }
-        });
-    </script>
+/* ============ GENSHIN MODULE (mock data seeded from API docs) ============ */
+const GENSHIN_MOCK = {
+  banners: { status:'success', timestamp:'2026-06-19T16:45:00.000Z', data:[
+    { version:'6.6 (May 20, 2026)', phase:'Phase 1', new:['Nicole','Prune'], rerun:['Durin'] },
+    { version:'6.6 (May 20, 2026)', phase:'Phase 2', new:['Skirk'], rerun:['Arlecchino','Wriothesley'] },
+  ]},
+  codes: { status:'success', timestamp:'2026-06-19T16:45:00.000Z', count:3, cards:[
+    { codes:['GENSHINGIFT'], server:'Global', rewards:['50 Primogems','3 Hero\'s Wit'], validity:'Indefinite' },
+    { codes:['SAYRAA2026'], server:'Global', rewards:['160 Primogems','5 Mystic Enhancement Ore'], validity:'2026-08-01' },
+    { codes:['TEYVATREUNION'], server:'Global', rewards:['100 Primogems','50000 Mora'], validity:'Indefinite' },
+  ]},
+  checkin: { ok:true, claimed:true, nickname:'Traveler', uid:'800000000', server:'Asia', adventure_rank:60, signed_days:19, total_days_month:30, missing_days:11,
+    today_reward:{name:'Primogem', count:20}, tomorrow_reward:{name:'Mora', count:5000}, risk_code:0 },
+  roleStats: { ok:true, role:{nickname:'Lumine', level:56}, stats:{ active_days:176, achievements:575, avatars_count:45, way_points:509, domains:54, spiral_abyss:'8-3',
+    chests:{common:1319, exquisite:1018, precious:313, luxurious:125, magic:79}, oculus:{anemo:65, geo:131, electro:181, dendro:8, hydro:271, pyro:6} },
+    avatars:[
+      {name:'Arlecchino', element:'Pyro', level:90, rarity:5, constellation:0, weapon:{name:'Hòa Phác Diên', level:90, rarity:5}},
+      {name:'Nahida', element:'Dendro', level:90, rarity:5, constellation:2, weapon:{name:'A Thousand Floating Dreams', level:90, rarity:5}},
+      {name:'Xingqiu', element:'Hydro', level:80, rarity:4, constellation:6, weapon:{name:'Sacrificial Sword', level:70, rarity:4}},
+    ]},
+  checkinList: { ok:true, month:7, resign_available:true, has_month_card:false,
+    monthly_awards:[
+      {day:1,name:'Adventurer\'s EXP',count:3},{day:2,name:'Mora',count:10000},{day:3,name:'Fine Enhancement Ore',count:3},
+      {day:4,name:'Primogem',count:20},{day:5,name:'Hero\'s Wit',count:2},{day:6,name:'Mystic Enhancement Ore',count:2},{day:7,name:'Primogem',count:30},
+    ],
+    extra_awards:[ {id:228, sign_day_required:2, count:20, is_highlight:true} ] },
+};
+
+const ELEMENT_COLOR = {Pyro:'#f4586b', Hydro:'#5aa7ef', Dendro:'#8b9a68', Electro:'#b48ef0', Anemo:'#34d6b4', Cryo:'#8fd8ef', Geo:'#f5a623'};
+
+function genshinTab(tab, el){
+  document.querySelectorAll('#genshin-tabs .tab-pill').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderGenshinPanel(tab);
+}
+
+function skeletonBlock(h){ return `<div class="skel" style="height:${h}px"></div>`; }
+
+function renderGenshinPanel(tab){
+  const panel = document.getElementById('genshin-panel');
+  panel.innerHTML = `<div class="space-y-3">${skeletonBlock(90)}${skeletonBlock(90)}</div>`;
+  setTimeout(()=>{
+    if(tab==='banners') renderBanners(panel);
+    else if(tab==='codes') renderCodes(panel);
+    else if(tab==='checkin') renderCheckin(panel);
+    else if(tab==='redeem') renderRedeem(panel);
+    else if(tab==='stats') renderRoleStats(panel);
+    else if(tab==='calendar') renderCalendar(panel);
+  }, 500);
+}
+
+function renderBanners(panel){
+  const d = GENSHIN_MOCK.banners;
+  panel.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold text-[14px]">Upcoming Banners</h3>
+      <span class="text-[11px] mono" style="color:var(--text-faint)">synced ${timeAgo(d.timestamp)}</span>
+    </div>
+    <div class="space-y-3">
+      ${d.data.map(b=>`
+        <div class="glass card p-4">
+          <div class="flex items-center justify-between mb-2.5">
+            <span class="pill" style="background:rgba(124,111,240,.14); color:var(--accent)">${b.version}</span>
+            <span class="text-[11.5px]" style="color:var(--text-faint)">${b.phase}</span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            ${b.new.map(n=>`<span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)"><i class="fa-solid fa-star mr-1 text-[9px]"></i>${n}</span>`).join('')}
+            ${b.rerun.map(n=>`<span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-dim)">${n} · rerun</span>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>
+    ${devPanel(d)}
+  `;
+}
+
+function renderCodes(panel){
+  const d = GENSHIN_MOCK.codes;
+  panel.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold text-[14px]">Active Gift Codes</h3>
+      <span class="text-[11px] mono" style="color:var(--text-faint)">${d.count} available</span>
+    </div>
+    <div class="space-y-2.5">
+      ${d.cards.map(c=>`
+        <div class="glass card p-4 flex items-center gap-3.5">
+          <div class="icon-tile" style="background:rgba(245,166,35,.14); color:var(--amber)"><i class="fa-solid fa-gift"></i></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="mono font-semibold text-[13.5px]">${c.codes[0]}</span>
+              <span class="text-[10.5px]" style="color:var(--text-faint)">${c.server}</span>
+            </div>
+            <div class="text-[11.5px] mt-0.5" style="color:var(--text-dim)">${c.rewards.join(' · ')}</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="copyCode('${c.codes[0]}')"><i class="fa-regular fa-copy"></i></button>
+        </div>`).join('')}
+    </div>
+    ${devPanel(d)}
+  `;
+}
+
+function copyCode(code){ navigator.clipboard?.writeText(code).catch(()=>{}); showToast('success', `Copied "${code}"`); }
+
+function renderCheckin(panel){
+  const d = GENSHIN_MOCK.checkin;
+  panel.innerHTML = `
+    <div class="glass card p-5 mb-4">
+      <div class="flex items-center gap-3.5 mb-4">
+        <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold glass">${d.nickname[0]}</div>
+        <div class="flex-1">
+          <div class="font-semibold text-[14.5px]">${d.nickname}</div>
+          <div class="text-[11.5px] mono" style="color:var(--text-faint)">UID ${d.uid} · ${d.server} · AR${d.adventure_rank}</div>
+        </div>
+        <span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)">${d.signed_days}/${d.total_days_month} days</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-xl p-3" style="background:rgba(255,255,255,.03); border:1px solid var(--line)">
+          <div class="text-[10.5px]" style="color:var(--text-faint)">Today's reward</div>
+          <div class="font-semibold text-[13.5px] mt-1">${d.today_reward.count}× ${d.today_reward.name}</div>
+        </div>
+        <div class="rounded-xl p-3" style="background:rgba(255,255,255,.03); border:1px solid var(--line)">
+          <div class="text-[10.5px]" style="color:var(--text-faint)">Tomorrow's reward</div>
+          <div class="font-semibold text-[13.5px] mt-1">${d.tomorrow_reward.count}× ${d.tomorrow_reward.name}</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary w-full" onclick="openCheckinSheet()"><i class="fa-solid fa-calendar-check"></i> Run daily check-in</button>
+    ${devPanel(d)}
+  `;
+}
+
+function openCheckinSheet(){
+  openSheet(`
+    <h3 class="display font-bold text-[16px] mb-1">Daily Check-in</h3>
+    <p class="text-[13px] mb-4" style="color:var(--text-dim)">Paste your HoYoLAB cookie to claim today's reward automatically.</p>
+    <div class="space-y-2.5 mb-4">
+      <textarea class="input" rows="3" placeholder="ltuid_v2=...; ltoken_v2=..."></textarea>
+      <select class="input">
+        <option>Asia</option><option>America</option><option>Europe</option><option>TW, HK, MO</option>
+      </select>
+    </div>
+    <button class="btn btn-primary w-full" onclick="closeSheet(); showToast('success','Checked in — +20 Primogem claimed')">Check in now</button>
+    <p class="text-[11px] text-center mt-3" style="color:var(--text-faint)">Your cookie is sent directly to the API and never stored</p>
+  `);
+}
+
+function renderRedeem(panel){
+  panel.innerHTML = `
+    <div class="glass card p-5">
+      <h3 class="font-semibold text-[14.5px] mb-1">Redeem a Gift Code</h3>
+      <p class="text-[12.5px] mb-4" style="color:var(--text-dim)">Applies a code directly to your account via the Hoyoverse API.</p>
+      <div class="space-y-2.5">
+        <input class="input" placeholder="Gift code, e.g. GENSHINGIFT">
+        <textarea class="input" rows="2" placeholder="HoYoLAB cookie"></textarea>
+        <select class="input"><option>Asia</option><option>America</option><option>Europe</option><option>TW</option></select>
+      </div>
+      <button class="btn btn-primary w-full mt-4" onclick="showToast('success','Redeemed successfully — 50 Primogems + 3 Hero\\'s Wit')">Redeem code</button>
+    </div>
+    ${devPanel({endpoint:'/genshin?type=redeemcode', method:'POST'})}
+  `;
+}
+
+function renderRoleStats(panel){
+  const d = GENSHIN_MOCK.roleStats;
+  panel.innerHTML = `
+    <div class="glass card p-5 mb-4">
+      <div class="flex items-center gap-3.5 mb-4">
+        <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold glass">${d.role.nickname[0]}</div>
+        <div>
+          <div class="font-semibold text-[14.5px]">${d.role.nickname}</div>
+          <div class="text-[11.5px]" style="color:var(--text-faint)">Adventure Level ${d.role.level}</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2.5 text-center">
+        ${statChip(d.stats.active_days,'Active days')}
+        ${statChip(d.stats.achievements,'Achievements')}
+        ${statChip(d.stats.avatars_count,'Characters')}
+        ${statChip(d.stats.domains,'Domains')}
+        ${statChip(d.stats.spiral_abyss,'Abyss')}
+        ${statChip(d.stats.way_points,'Waypoints')}
+      </div>
+    </div>
+    <h3 class="font-semibold text-[14px] mb-2.5">Characters</h3>
+    <div class="space-y-2.5">
+      ${d.avatars.map(a=>`
+        <div class="glass card p-3.5 flex items-center gap-3">
+          <div class="icon-tile" style="background:${ELEMENT_COLOR[a.element]}22; color:${ELEMENT_COLOR[a.element]}"><i class="fa-solid fa-user"></i></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="font-medium text-[13.5px]">${a.name}</span>
+              <span class="text-[10.5px]" style="color:var(--text-faint)">C${a.constellation}</span>
+            </div>
+            <div class="text-[11.5px]" style="color:var(--text-dim)">Lv.${a.level} · ${a.weapon.name}</div>
+          </div>
+          <span class="pill" style="background:${ELEMENT_COLOR[a.element]}18; color:${ELEMENT_COLOR[a.element]}">${a.element}</span>
+        </div>`).join('')}
+    </div>
+    ${devPanel(d)}
+  `;
+}
+function statChip(val,label){ return `<div class="rounded-xl py-3" style="background:rgba(255,255,255,.03); border:1px solid var(--line)"><div class="font-bold text-[15px] mono">${val}</div><div class="text-[10px] mt-0.5" style="color:var(--text-faint)">${label}</div></div>`; }
+
+function renderCalendar(panel){
+  const d = GENSHIN_MOCK.checkinList;
+  panel.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold text-[14px]">Check-in Rewards — Month ${d.month}</h3>
+      ${d.resign_available ? `<span class="pill" style="background:rgba(245,166,35,.14); color:var(--amber)">Re-sign available</span>` : ''}
+    </div>
+    <div class="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-4">
+      ${d.monthly_awards.map(a=>`
+        <div class="glass card p-2.5 text-center">
+          <div class="text-[10px]" style="color:var(--text-faint)">Day ${a.day}</div>
+          <div class="text-[10.5px] font-medium mt-1 truncate">${a.name}</div>
+          <div class="text-[11px] mono" style="color:var(--teal)">×${a.count}</div>
+        </div>`).join('')}
+    </div>
+    <h3 class="font-semibold text-[14px] mb-2.5">Bonus Rewards</h3>
+    <div class="space-y-2">
+      ${d.extra_awards.map(e=>`
+        <div class="glass card p-3.5 flex items-center gap-3">
+          <div class="icon-tile" style="background:rgba(124,111,240,.14); color:var(--accent)"><i class="fa-solid fa-star"></i></div>
+          <div class="flex-1">
+            <div class="text-[13px] font-medium">Sign for ${e.sign_day_required} day${e.sign_day_required>1?'s':''}</div>
+            <div class="text-[11.5px]" style="color:var(--text-dim)">×${e.count} bonus reward</div>
+          </div>
+          ${e.is_highlight ? `<span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)">Featured</span>` : ''}
+        </div>`).join('')}
+    </div>
+    ${devPanel(d)}
+  `;
+}
+
+function devPanel(obj){
+  if(!Sayraa.devMode) return '';
+  return `<details class="glass card p-3.5 mt-4">
+    <summary class="text-[12px] font-semibold cursor-pointer mono" style="color:var(--text-dim)">Raw response</summary>
+    <pre class="mono text-[11px] mt-2.5 overflow-x-auto" style="color:var(--text-faint)">${escapeHtml(JSON.stringify(obj,null,2))}</pre>
+  </details>`;
+}
+function escapeHtml(s){ return s.replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function timeAgo(iso){
+  const diff = Math.max(1, Math.round((Date.now()-new Date(iso).getTime())/60000));
+  if(diff < 60) return `${diff}m ago`;
+  return `${Math.round(diff/60)}h ago`;
+}
+
+/* ============ SETTINGS: accent swatches ============ */
+function renderAccentSwatches(){
+  const wrap = document.getElementById('accent-swatches');
+  wrap.innerHTML = ACCENTS.map(c=>`<button class="accent-swatch ${c===Sayraa.accent?'active':''}" style="background:${c}" onclick="setAccent('${c}', this)"></button>`).join('');
+}
+function setAccent(c, el){
+  Sayraa.accent = c;
+  document.documentElement.style.setProperty('--accent', c);
+  document.documentElement.style.setProperty('--accent-soft', c+'24');
+  document.querySelectorAll('.accent-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  showToast('success','Accent color updated');
+}
+
+/* ============ OAuth callback parsing (per docs response shape) ============ */
+function checkOAuthCallback(){
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const linkStatus = params.get('link');
+  const error = params.get('error');
+  if(token){
+    Sayraa.user = { name:'Traveler', email:'linked@sayraa.xyz', avatar:'T', providers:['discord'], token };
+    showToast('success','Signed in successfully');
+    history.replaceState({}, '', window.location.pathname);
+  } else if(linkStatus === 'success'){
+    showToast('success', `Linked ${params.get('provider')||'provider'} successfully`);
+    history.replaceState({}, '', window.location.pathname);
+  } else if(error){
+    showToast('error', decodeURIComponent(error));
+    history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+/* ============ INIT ============ */
+function init(){
+  // Tải lại phiên đăng nhập từ bộ nhớ tạm trình duyệt trước nếu có
+  const savedToken = sessionStorage.getItem('sayraa_token');
+  const savedUser = sessionStorage.getItem('sayraa_user');
+  if(savedToken && savedUser) {
+    Sayraa.user = JSON.parse(savedUser);
+  }
+
+  // Check xem có phải vừa đi qua link điều hướng OAuth về không
+  checkOAuthCallback();
+  
+  renderDashboard();
+  renderAuthUI();
+  renderAccentSwatches();
+  renderGenshinPanel('banners');
+}
+init();
+
+</script>
 </body>
 </html>
