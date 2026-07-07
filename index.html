@@ -390,7 +390,7 @@
 </div>
 
 <script>
-/* ============ STATE (in-memory only, no localStorage) ============ */
+/* ============ STATE (in-memory & synced with sessionStorage) ============ */
 const Sayraa = {
   user: null, // {name, email, avatar, providers:[], token}
   devMode: false,
@@ -401,7 +401,7 @@ const Sayraa = {
 const ACCENTS = ['#7c6ff0','#34d6b4','#f5a623','#f4586b','#5aa7ef'];
 
 const MODULES = [
-  { id:'auth', route:'settings', name:'Authentication', icon:'fa-fingerprint', color:'#7c6ff0', live:true, desc:'OAuth login & account linking across providers.', activity:'Ready — no active session' },
+  { id:'auth', route:'settings', name:'Authentication', icon:'fa-fingerprint', color:'#7c6ff0', live:true, desc:'OAuth login & account linking across providers.', activity:'Ready — synced' },
   { id:'genshin', route:'genshin', name:'Genshin Impact', icon:'https://static.wikia.nocookie.net/gensin-impact/images/8/80/Genshin_Impact.png/revision/latest?cb=20240331104358', color:'#f5a623', live:true, desc:'Banners, codes, check-in & role stats.', activity:'Banner data synced 2m ago' },
   { id:'downloader', route:'downloader', name:'Downloader', icon:'fa-download', color:'#5aa7ef', live:false, desc:'Save video & audio from any link.', activity:'In development' },
   { id:'apis', route:'apis', name:'Developer API', icon:'fa-plug', color:'#34d6b4', live:false, desc:'Test and explore Sayraa endpoints.', activity:'In development' },
@@ -521,7 +521,7 @@ function renderDashboard(){
   }).join('');
 }
 
-/* ============ AUTH (REAL IMPLEMENTATION CONNECTED TO API) ============ */
+/* ============ AUTHENTICATION (REAL API LOGIC) ============ */
 const OAUTH_BASE = 'https://api.sayraa.xyz/api/v1/auth';
 const PROVIDERS = [
   {id:'google', name:'Google', icon:'fa-brands fa-google', color:'#ea4335'},
@@ -529,7 +529,6 @@ const PROVIDERS = [
   {id:'github', name:'GitHub', icon:'fa-brands fa-github', color:'#e8e9ec'},
 ];
 
-// Mở bảng chọn phương thức đăng nhập
 function openLoginSheet(){
   openSheet(`
     <h3 class="display font-bold text-[17px] mb-1">Sign in to Sayraa</h3>
@@ -545,24 +544,20 @@ function openLoginSheet(){
   `);
 }
 
-// Bắt đầu luồng chuyển hướng OAuth2 (Hỗ trợ cả Đăng nhập lẫn Link Account)
 function startOAuth(providerId, linkToken){
   const p = PROVIDERS.find(x=>x.id===providerId);
   const url = new URL(`${OAUTH_BASE}/login/${providerId}`);
-  
-  // Nếu có linkToken tức là đang ở trang Settings và muốn liên kết thêm tài khoản
-  if(linkToken) url.searchParams.set('token', linkToken);
+  if(linkToken) url.searchParams.set('token', linkToken); // Truyền token nếu đang Link Account
   
   closeSheet();
   showToast('info', `Redirecting to ${p.name}…`);
   
-  // Chuyển hướng toàn trang sang API để thực hiện handshake với nhà cung cấp
+  // Chuyển hướng sang Backend để xử lý OAuth
   setTimeout(() => {
     window.location.href = url.toString();
   }, 800);
 }
 
-// Hàm bổ trợ giải mã JWT Token ở Frontend để lấy thông tin User từ Database
 function parseJwt(token) {
   try {
     const base64Url = token.split('.')[1];
@@ -576,55 +571,45 @@ function parseJwt(token) {
   }
 }
 
-// Hàm kiểm tra URL xem Backend có vừa trả dữ liệu về không
 async function checkOAuthCallback(){
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
   const linkStatus = params.get('link');
   const error = params.get('error');
 
-  // TRƯỜNG HỢP 1: ĐĂNG NHẬP THÀNH CÔNG (Nhận JWT từ Server)
   if(token){
-    const payload = parseJwt(token); // Giải mã token để lấy data thật từ MySQL
+    const payload = parseJwt(token);
     if (payload) {
       Sayraa.user = {
         name: payload.username || 'User',
         email: payload.email || 'No email provided',
-        avatar: (payload.username || 'U')[0].toUpperCase(),
-        providers: payload.providers || [payload.provider], // Mảng danh sách các mạng đã liên kết từ DB
+        avatar: payload.avatar,
+        providers: payload.providers || [], // Mảng provider từ Database
         token: token
       };
-      // Lưu token vào sessionStorage để tải lại trang không bị mất login
       sessionStorage.setItem('sayraa_token', token);
       sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
-      
-      showToast('success', `Welcome back, ${Sayraa.user.name}!`);
+      showToast('success', 'Signed in successfully');
     }
-    // Xóa query params trên thanh địa chỉ cho sạch web
     history.replaceState({}, '', window.location.pathname);
   } 
-  
-  // TRƯỜNG HỢP 2: LIÊN KẾT TÀI KHOẢN THÀNH CÔNG (Link Account)
   else if(linkStatus === 'success'){
     const targetProvider = params.get('provider');
-    showToast('success', `Linked ${targetProvider.toUpperCase()} successfully!`);
+    showToast('success', `Linked ${targetProvider.toUpperCase()} successfully`);
     
-    // Đồng bộ lại trạng thái local (Thêm provider mới vào danh sách hiển thị)
+    // Thêm provider mới vào state hiện tại
     if(Sayraa.user && !Sayraa.user.providers.includes(targetProvider)){
       Sayraa.user.providers.push(targetProvider);
       sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
     }
     history.replaceState({}, '', window.location.pathname);
   } 
-  
-  // TRƯỜNG HỢP 3: THẤT BẠI / BỊ TRÙNG TÀI KHOẢN KHÁC
   else if(error){
     showToast('error', decodeURIComponent(error));
     history.replaceState({}, '', window.location.pathname);
   }
 }
 
-// Gọi API gửi yêu cầu gỡ liên kết (Unlink) lên Backend
 async function confirmUnlink(providerId){
   const p = PROVIDERS.find(x=>x.id===providerId);
   closeSheet();
@@ -637,7 +622,6 @@ async function confirmUnlink(providerId){
         'Content-Type': 'application/json'
       }
     });
-    
     const resData = await response.json();
     
     if (!response.ok) {
@@ -645,7 +629,7 @@ async function confirmUnlink(providerId){
       return;
     }
     
-    // Cập nhật giao diện sau khi xóa thành công trong MySQL
+    // Cập nhật State sau khi gỡ liên kết thành công
     Sayraa.user.providers = Sayraa.user.providers.filter(id=>id!==providerId);
     sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
     showToast('success', `Unlinked ${p.name} successfully.`);
@@ -655,7 +639,18 @@ async function confirmUnlink(providerId){
   }
 }
 
-// Đăng xuất hoàn toàn khỏi hệ thống
+function unlinkProvider(providerId){
+  const p = PROVIDERS.find(x=>x.id===providerId);
+  openSheet(`
+    <h3 class="display font-bold text-[16px] mb-2">Unlink ${p.name}?</h3>
+    <p class="text-[13px] mb-5" style="color:var(--text-dim)">You'll no longer be able to sign in with ${p.name}. This won't affect your other linked providers.</p>
+    <div class="flex gap-2.5">
+      <button class="btn btn-ghost flex-1" onclick="closeSheet()">Cancel</button>
+      <button class="btn btn-danger flex-1" onclick="confirmUnlink('${providerId}')">Unlink</button>
+    </div>
+  `);
+}
+
 function logout(){
   openSheet(`
     <h3 class="display font-bold text-[16px] mb-2">Log out of Sayraa?</h3>
@@ -677,18 +672,6 @@ function performLogout() {
   navigate('dashboard');
 }
 
-function unlinkProvider(providerId){
-  const p = PROVIDERS.find(x=>x.id===providerId);
-  openSheet(`
-    <h3 class="display font-bold text-[16px] mb-2">Unlink ${p.name}?</h3>
-    <p class="text-[13px] mb-5" style="color:var(--text-dim)">You'll no longer be able to sign in with ${p.name}. This won't affect your other linked providers.</p>
-    <div class="flex gap-2.5">
-      <button class="btn btn-ghost flex-1" onclick="closeSheet()">Cancel</button>
-      <button class="btn btn-danger flex-1" onclick="confirmUnlink('${providerId}')">Unlink</button>
-    </div>
-  `);
-}
-
 function copyToken(){
   if(!Sayraa.user){ showToast('error', 'Sign in to generate a token'); return; }
   navigator.clipboard?.writeText(Sayraa.user.token).catch(()=>{});
@@ -705,11 +688,18 @@ function toggleSwitch(el, key){
   showToast('info', `Developer mode ${Sayraa[key] ? 'enabled' : 'disabled'}`);
 }
 
+function getAvatarHTML(avatarData, fallbackName) {
+    if (!avatarData) return (fallbackName || 'U')[0].toUpperCase();
+    if (avatarData.startsWith('http')) return `<img src="${avatarData}" class="w-full h-full object-cover">`;
+    return avatarData[0].toUpperCase();
+}
 
 function renderAuthUI(){
   const u = Sayraa.user;
+  const avatarHTML = u ? getAvatarHTML(u.avatar, u.name) : '?';
+
   // topbar avatar
-  document.getElementById('avatar-btn').textContent = u ? u.avatar : '?';
+  document.getElementById('avatar-btn').innerHTML = avatarHTML;
   // dashboard greeting
   document.getElementById('dash-greeting').textContent = u ? `Welcome back, ${u.name.split(' ')[0].split('#')[0]}` : 'Good to see you';
   document.getElementById('dash-account-status').textContent = u ? 'Signed in' : 'Guest';
@@ -717,7 +707,7 @@ function renderAuthUI(){
   // drawer account block
   document.getElementById('drawer-account').innerHTML = u ? `
     <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 rounded-xl flex items-center justify-center font-semibold text-[13px] glass">${u.avatar}</div>
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center font-semibold text-[13px] glass overflow-hidden">${avatarHTML}</div>
       <div class="min-w-0 flex-1">
         <div class="text-[13px] font-semibold truncate">${u.name}</div>
         <div class="text-[11px] truncate" style="color:var(--text-faint)">${u.email}</div>
@@ -729,7 +719,8 @@ function renderAuthUI(){
   `;
 
   // settings page
-  document.getElementById('settings-avatar').textContent = u ? u.avatar : '?';
+  document.getElementById('settings-avatar').innerHTML = avatarHTML;
+  document.getElementById('settings-avatar').classList.add('overflow-hidden');
   document.getElementById('settings-name').textContent = u ? u.name : 'Not signed in';
   document.getElementById('settings-email').textContent = u ? u.email : 'Sign in to sync your account';
   document.getElementById('settings-auth-actions').innerHTML = u
@@ -1014,25 +1005,6 @@ function setAccent(c, el){
   showToast('success','Accent color updated');
 }
 
-/* ============ OAuth callback parsing (per docs response shape) ============ */
-function checkOAuthCallback(){
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get('token');
-  const linkStatus = params.get('link');
-  const error = params.get('error');
-  if(token){
-    Sayraa.user = { name:'Traveler', email:'linked@sayraa.xyz', avatar:'T', providers:['discord'], token };
-    showToast('success','Signed in successfully');
-    history.replaceState({}, '', window.location.pathname);
-  } else if(linkStatus === 'success'){
-    showToast('success', `Linked ${params.get('provider')||'provider'} successfully`);
-    history.replaceState({}, '', window.location.pathname);
-  } else if(error){
-    showToast('error', decodeURIComponent(error));
-    history.replaceState({}, '', window.location.pathname);
-  }
-}
-
 /* ============ INIT ============ */
 function init(){
   // Tải lại phiên đăng nhập từ bộ nhớ tạm trình duyệt trước nếu có
@@ -1051,7 +1023,7 @@ function init(){
   renderGenshinPanel('banners');
 }
 init();
-
 </script>
+
 </body>
 </html>
