@@ -431,7 +431,7 @@ const ROUTE_META = {
 
 // Cập nhật hàm navigate để đổi hash trên URL gán trực tiếp
 function navigate(route){
-  if(window.location.hash !== `#${route}`) {
+  if(window.location.hash !== `?${route}`) {
     window.location.hash = route;
     return; // Sẽ kích hoạt sự kiện hashchange để render view
   }
