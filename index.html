@@ -591,7 +591,7 @@ async function checkOAuthCallback(){
         name: payload.username || 'User',
         email: payload.email || 'No email provided',
         avatar: (payload.username || 'U')[0].toUpperCase(),
-        providers: payload.providers || [payload.provider], // Mảng danh sách các mạng đã liên kết
+        providers: payload.providers || [payload.provider], // Mảng danh sách các mạng đã liên kết từ DB
         token: token
       };
       // Lưu token vào sessionStorage để tải lại trang không bị mất login
@@ -704,6 +704,7 @@ function toggleSwitch(el, key){
   Sayraa[key] = el.classList.contains('on');
   showToast('info', `Developer mode ${Sayraa[key] ? 'enabled' : 'disabled'}`);
 }
+
 
 function renderAuthUI(){
   const u = Sayraa.user;
