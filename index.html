@@ -938,17 +938,13 @@ async function deleteApiKey() {
   } catch(e) { showToast('error', 'Failed to delete key'); }
 }
 
-/* ============ GENSHIN MODULE MOCK ============ */
+/* ============ GENSHIN MODULE DATA ============ */
 const GENSHIN_MOCK = {
   banners: { status:'success', timestamp:'2026-06-19T16:45:00.000Z', data:[
     { version:'6.6 (May 20, 2026)', phase:'Phase 1', new:['Nicole','Prune'], rerun:['Durin'] },
     { version:'6.6 (May 20, 2026)', phase:'Phase 2', new:['Skirk'], rerun:['Arlecchino','Wriothesley'] },
   ]},
-  codes: { status:'success', timestamp:'2026-06-19T16:45:00.000Z', count:3, cards:[
-    { codes:['GENSHINGIFT'], server:'Global', rewards:['50 Primogems','3 Hero\'s Wit'], validity:'Indefinite' },
-    { codes:['SAYRAA2026'], server:'Global', rewards:['160 Primogems','5 Mystic Enhancement Ore'], validity:'2026-08-01' },
-    { codes:['TEYVATREUNION'], server:'Global', rewards:['100 Primogems','50000 Mora'], validity:'Indefinite' },
-  ]},
+  // Đã xóa hoàn toàn codes mock ở đây để gọi API trực tiếp
   checkin: { ok:true, claimed:true, nickname:'Traveler', uid:'800000000', server:'Asia', adventure_rank:60, signed_days:19, total_days_month:30, missing_days:11,
     today_reward:{name:'Primogem', count:20}, tomorrow_reward:{name:'Mora', count:5000}, risk_code:0 },
   roleStats: { ok:true, role:{nickname:'Lumine', level:56}, stats:{ active_days:176, achievements:575, avatars_count:45, way_points:509, domains:54, spiral_abyss:'8-3',
@@ -1013,28 +1009,44 @@ function renderBanners(panel){
   `;
 }
 
-function renderCodes(panel){
-  const d = GENSHIN_MOCK.codes;
-  panel.innerHTML = `
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="font-semibold text-[14px]">Active Gift Codes</h3>
-      <span class="text-[11px] mono" style="color:var(--text-faint)">${d.count} available</span>
-    </div>
-    <div class="space-y-2.5">
-      ${d.cards.map(c=>`
-        <div class="glass card p-4 flex items-center gap-3.5">
-          <div class="icon-tile" style="background:rgba(245,166,35,.14); color:var(--amber)"><i class="fa-solid fa-gift"></i></div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="mono font-semibold text-[13.5px]">${c.codes[0]}</span>
-              <span class="text-[10.5px]" style="color:var(--text-faint)">${c.server}</span>
+/* Gọi API thật thay vì dùng Mock Data */
+async function renderCodes(panel){
+  try {
+    const response = await fetch('https://api.sayraa.xyz/api/v1/genshin?type=codes');
+    if (!response.ok) throw new Error('Không thể kết nối đến máy chủ API');
+    
+    const d = await response.json();
+    if (d.status !== 'success' || !d.cards) throw new Error('Dữ liệu phản hồi không hợp lệ');
+
+    panel.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-[14px]">Active Gift Codes</h3>
+        <span class="text-[11px] mono" style="color:var(--text-faint)">${d.count} available</span>
+      </div>
+      <div class="space-y-2.5">
+        ${d.cards.map(c=>`
+          <div class="glass card p-4 flex items-center gap-3.5">
+            <div class="icon-tile" style="background:rgba(245,166,35,.14); color:var(--amber)"><i class="fa-solid fa-gift"></i></div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="mono font-semibold text-[13.5px]">${c.codes[0]}</span>
+                <span class="text-[10.5px]" style="color:var(--text-faint)">${c.server}</span>
+              </div>
+              <div class="text-[11.5px] mt-0.5" style="color:var(--text-dim)">${c.rewards.join(' · ')}</div>
             </div>
-            <div class="text-[11.5px] mt-0.5" style="color:var(--text-dim)">${c.rewards.join(' · ')}</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="copyCode('${c.codes[0]}')"><i class="fa-regular fa-copy"></i></button>
-        </div>`).join('')}
-    </div>
-  `;
+            <button class="btn btn-ghost btn-sm" onclick="copyCode('${c.codes[0]}')"><i class="fa-regular fa-copy"></i></button>
+          </div>`).join('')}
+      </div>
+    `;
+  } catch (error) {
+    console.error('Error fetching Genshin codes:', error);
+    panel.innerHTML = `
+      <div class="glass card p-5 text-center text-[13px]" style="color: #f4586b">
+        <i class="fa-solid fa-circle-exclamation mb-2 text-[20px] block"></i>
+        Không thể lấy danh sách mã đổi thưởng. Vui lòng thử lại sau!
+      </div>
+    `;
+  }
 }
 
 function copyCode(code){ navigator.clipboard?.writeText(code).catch(()=>{}); showToast('success', `Copied "${code}"`); }
@@ -1166,6 +1178,7 @@ function timeAgo(iso){
   if(diff < 60) return `${diff}m ago`;
   return `${Math.round(diff/60)}h ago`;
 }
+
 
 /* ============ OTHER SETTINGS ============ */
 function renderAccentSwatches(){
