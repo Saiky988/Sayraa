@@ -437,7 +437,7 @@
 </div>
 
 <script>
-/* ============ STATE (in-memory & synced with sessionStorage) ============ */
+/* ============ STATE (in-memory & synced with localStorage) ============ */
 const Sayraa = {
   user: null, // {name, email, avatar, providers:[], token}
   devMode: false,
@@ -650,8 +650,8 @@ async function checkOAuthCallback(){
         providers: payload.providers || [],
         token: token
       };
-      sessionStorage.setItem('sayraa_token', token);
-      sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
+      localStorage.setItem('sayraa_token', token);
+      localStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
       showToast('success', 'Signed in successfully');
     }
     history.replaceState({}, '', window.location.pathname + window.location.hash);
@@ -662,7 +662,7 @@ async function checkOAuthCallback(){
     
     if(Sayraa.user && !Sayraa.user.providers.includes(targetProvider)){
       Sayraa.user.providers.push(targetProvider);
-      sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
+      localStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
     }
     history.replaceState({}, '', window.location.pathname + window.location.hash);
   } 
@@ -692,7 +692,7 @@ async function confirmUnlink(providerId){
     }
     
     Sayraa.user.providers = Sayraa.user.providers.filter(id=>id!==providerId);
-    sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
+    localStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
     showToast('success', `Unlinked ${p.name} successfully.`);
     renderAuthUI();
   } catch (err) {
@@ -740,8 +740,8 @@ async function performLogout() {
   }
 
   Sayraa.user = null;
-  sessionStorage.removeItem('sayraa_token');
-  sessionStorage.removeItem('sayraa_user');
+  localStorage.removeItem('sayraa_token');
+  localStorage.removeItem('sayraa_user');
   closeSheet();
   renderAuthUI();
   showToast('info', 'Logged out');
@@ -1112,8 +1112,8 @@ function getDeviceInfo() {
 
 /* ============ INIT ============ */
 function init(){
-  const savedToken = sessionStorage.getItem('sayraa_token');
-  const savedUser = sessionStorage.getItem('sayraa_user');
+  const savedToken = localStorage.getItem('sayraa_token');
+  const savedUser = localStorage.getItem('sayraa_user');
   if(savedToken && savedUser) {
     Sayraa.user = JSON.parse(savedUser);
   }
