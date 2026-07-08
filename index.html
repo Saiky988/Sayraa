@@ -879,7 +879,7 @@ async function toggleSwitch(el, category, key) {
   try {
     const res = await fetch(SETTINGS_BASE, {
       method: 'PATCH',
-      headers: { credentials: 'include', 'Authorization': `Bearer ${Sayraa.user.token}`, 'Content-Type': 'application/json' },
+      headers: { 'Authorization': `Bearer ${Sayraa.user.token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     const data = await res.json();
