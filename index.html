@@ -593,7 +593,6 @@ function renderView(route) {
   document.getElementById('topbar-sub').textContent = meta.sub;
   closeDrawer();
   window.scrollTo({top:0, behavior:'smooth'});
-
   const soonSection = document.querySelector(`section[data-view="${route}"][data-icon]`);
   if(soonSection && !soonSection.dataset.rendered) renderComingSoon(soonSection);
 }
@@ -729,11 +728,8 @@ async function confirmUnlink(providerId){
   closeSheet();
   try {
     const response = await fetch(`${OAUTH_BASE}/unlink/${providerId}`, { method: 'POST', headers: { 'Authorization': `Bearer ${Sayraa.user.token}`, 'Content-Type': 'application/json' }});
-    if (response.status === 401) return performLogout(false);
-    
     const resData = await response.json();
     if (!response.ok) return showToast('error', resData.error || 'Failed to unlink');
-    
     Sayraa.user.providers = Sayraa.user.providers.filter(id=>id!==providerId);
     localStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
     showToast('success', `Unlinked successfully.`);
@@ -762,9 +758,8 @@ function logout(){
   `);
 }
 
-// Hàm logout đã được nâng cấp: Tự dọn sạch UI nếu token không hợp lệ (401)
-async function performLogout(callApi = true) {
-  if (Sayraa.user && callApi) {
+async function performLogout() {
+  if (Sayraa.user) {
     try { await fetch(`${OAUTH_BASE}/logout`, { method: 'POST', headers: { 'Authorization': `Bearer ${Sayraa.user.token}` }}); } catch (e) {}
   }
   Sayraa.user = null;
@@ -772,7 +767,7 @@ async function performLogout(callApi = true) {
   localStorage.removeItem('sayraa_user');
   closeSheet();
   renderAuthUI();
-  if(callApi) showToast('info', 'Logged out');
+  showToast('info', 'Logged out');
   navigate('dashboard');
 }
 
@@ -809,8 +804,6 @@ function renderAuthUI(){
     ? `<button class="btn btn-danger btn-sm" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</button>`
     : `<button class="btn btn-primary btn-sm" onclick="openLoginSheet()"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>`;
 
-  document.getElementById('jwt-display').textContent = u ? u.token : '— sign in to generate —';
-
   document.getElementById('providers-list').innerHTML = PROVIDERS.map(p=>{
     const linked = u && u.providers.includes(p.id);
     return `
@@ -838,44 +831,26 @@ function renderAuthUI(){
 }
 
 /* ============ SETTINGS API (PATCH JSON) ============ */
-// Hàm ép kiểu an toàn cho chuỗi JSON từ MySQL trả về
-function parseDbJson(val) {
-    if (typeof val === 'string') {
-        try { return JSON.parse(val); } catch(e) { return {}; }
-    }
-    return val || {};
-}
-
 async function fetchSettings() {
   try {
     const res = await fetch(SETTINGS_BASE, { headers: { 'Authorization': `Bearer ${Sayraa.user.token}` }});
-    // Bắt lỗi 401: Đá văng ra màn hình Guest nếu token hết hạn/sai
-    if (res.status === 401) {
-        showToast('error', 'Session expired. Please log in again.');
-        return performLogout(false);
-    }
-    
     const data = await res.json();
     if (data.success) {
       const s = data.data;
       
-      // Parse JSON thành Object
-      const noti = parseDbJson(s.notifications);
-      const priv = parseDbJson(s.privacy);
-      const pref = parseDbJson(s.preferences);
-
+      // Hàm gạt công tắc cho đúng trạng thái DB
       const setToggle = (id, val) => { const el = document.getElementById(id); if(el) el.classList.toggle('on', !!val); };
       
-      setToggle('email-switch', noti.email);
-      setToggle('push-switch', noti.push);
-      setToggle('discord-switch', noti.discord);
-      setToggle('security-switch', noti.security_alert);
-      setToggle('system-update-switch', noti.system_update);
+      setToggle('email-switch', s.notifications?.email);
+      setToggle('push-switch', s.notifications?.push);
+      setToggle('discord-switch', s.notifications?.discord);
+      setToggle('security-switch', s.notifications?.security_alert);
+      setToggle('system-update-switch', s.notifications?.system_update);
 
-      setToggle('public-profile-switch', priv.profile_public);
-      setToggle('show-email-switch', priv.show_email);
-      setToggle('analytics-switch', priv.analytics);
-      setToggle('crash-report-switch', priv.crash_report);
+      setToggle('public-profile-switch', s.privacy?.profile_public);
+      setToggle('show-email-switch', s.privacy?.show_email);
+      setToggle('analytics-switch', s.privacy?.analytics);
+      setToggle('crash-report-switch', s.privacy?.crash_report);
 
       setToggle('dev-mode-switch', s.developer_mode);
       setToggle('api-logs-switch', s.show_api_logs);
@@ -890,6 +865,7 @@ async function toggleSwitch(el, category, key) {
   const isCurrentlyOn = el.classList.contains('on');
   const newValue = !isCurrentlyOn;
   
+  // Optimistic Update UI
   el.classList.toggle('on');
 
   let payload = {};
@@ -903,16 +879,13 @@ async function toggleSwitch(el, category, key) {
   try {
     const res = await fetch(SETTINGS_BASE, {
       method: 'PATCH',
-      headers: { 'Authorization': `Bearer ${Sayraa.user.token}`, 'Content-Type': 'application/json' },
+      headers: { credentials: 'include', 'Authorization': `Bearer ${Sayraa.user.token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    
-    if (res.status === 401) return performLogout(false);
-    
     const data = await res.json();
     if(!data.success) throw new Error(data.error);
   } catch (err) {
-    el.classList.toggle('on'); 
+    el.classList.toggle('on'); // Revert UI
     showToast('error', 'Failed to save setting');
   }
 }
@@ -921,8 +894,6 @@ async function toggleSwitch(el, category, key) {
 async function loadApiKeyInfo() {
   try {
     const res = await fetch(`${OAUTH_BASE}/apikey`, { headers: { 'Authorization': `Bearer ${Sayraa.user.token}` }});
-    if (res.status === 401) return; // Đã xử lý đá văng ở fetchSettings rồi
-    
     const data = await res.json();
     const display = document.getElementById('api-key-display');
     const btn = document.getElementById('api-key-btn');
@@ -1212,7 +1183,7 @@ function setAccent(c, el){
     let key = 'cyan';
     if(c === '#7c6ff0') key = 'purple';
     if(c === '#34d6b4') key = 'cyan';
-    if(c === '#f5a623') key = 'amber';
+    if(c === '#f5a623') key = 'amber'; // Hoặc màu bác mapping bên db
     if(c === '#f4586b') key = 'red';
     if(c === '#5aa7ef') key = 'blue';
 
@@ -1252,19 +1223,13 @@ function getDeviceInfo() {
 }
 
 /* ============ INIT ============ */
-async function init(){
-  // 1. Tải user từ LocalStorage
+function init(){
   const savedToken = localStorage.getItem('sayraa_token');
   const savedUser = localStorage.getItem('sayraa_user');
   if(savedToken && savedUser) {
     Sayraa.user = JSON.parse(savedUser);
-    Sayraa.user.token = savedToken; // Đảm bảo gán lại token chính xác
   }
 
-  // 2. Chờ xử lý Callback OAuth để update JWT (nếu có) TRƯỚC KHI load UI
-  await checkOAuthCallback();
-
-  // 3. Khởi tạo Route
   const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
   if (ROUTE_META[initialRoute]) {
     renderView(initialRoute);
@@ -1272,11 +1237,11 @@ async function init(){
     window.location.hash = 'dashboard';
   }
 
-  // 4. Cập nhật DOM tĩnh
+  checkOAuthCallback();
+  
   const deviceInfoEl = document.getElementById("deviceInfo");
   if(deviceInfoEl) deviceInfoEl.textContent = getDeviceInfo();
 
-  // 5. Render toàn bộ UI (sẽ tự động gọi API lấy Settings & Key nếu đã có Sayraa.user)
   renderDashboard();
   renderAuthUI();
   renderAccentSwatches();
@@ -1284,7 +1249,6 @@ async function init(){
 }
 init();
 </script>
-
 
 
 
