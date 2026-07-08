@@ -349,24 +349,71 @@
         </div>
 
         <div class="mb-3 text-[12px] font-semibold uppercase tracking-wide" style="color:var(--text-faint)">Theme</div>
-        <div class="glass card p-4 mb-6 space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <div class="text-[13.5px] font-medium">Dark Mode</div>
-              <div class="text-[11.5px]" style="color:var(--text-faint)">Sayraa is designed dark-first</div>
+        <div class="glass card p-4 mb-6 space-y-5">
+          
+          <div>
+            <div class="text-[13.5px] font-medium mb-3">Appearance</div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              
+              <!-- System Theme (Đang chọn) -->
+              <div class="cursor-pointer group" onclick="showToast('info', 'System theme selected')">
+                <div class="p-1 rounded-[10px] border-2 border-[var(--accent)] bg-white/5 transition-colors">
+                  <svg class="w-full h-auto block rounded-md" viewBox="0 0 163 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_742_69895)"><rect x="0.742188" width="161.5" height="88" rx="6" fill="#1C1C1C"></rect><mask id="path-3-inside-1_742_69895" fill="white"><path d="M0.742188 6C0.742188 2.68629 3.42848 0 6.74219 0H13.7422V88H6.74219C3.42848 88 0.742188 85.3137 0.742188 82V6Z"></path></mask><path d="M0.742188 6C0.742188 2.68629 3.42848 0 6.74219 0H13.7422V88H6.74219C3.42848 88 0.742188 85.3137 0.742188 82V6Z" fill="#1C1C1C"></path><path d="M0.742188 0H13.7422H0.742188ZM13.7422 88H0.742188H13.7422ZM0.742188 88V0V88ZM14.7422 0V88H12.7422V0H14.7422Z" fill="#2E2E2E" mask="url(#path-3-inside-1_742_69895)"></path><mask id="path-5-inside-2_742_69895" fill="white"><path d="M156.242 -2.62268e-07C159.556 -1.17421e-07 162.242 2.68629 162.242 6L162.242 13L13.7422 13L13.7422 -6.49114e-06L156.242 -2.62268e-07Z"></path></mask><path d="M156.242 -2.62268e-07C159.556 -1.17421e-07 162.242 2.68629 162.242 6L162.242 13L13.7422 13L13.7422 -6.49114e-06L156.242 -2.62268e-07Z" fill="#1C1C1C"></path><path d="M162.242 0L162.242 13L162.242 0ZM13.7422 13L13.7422 -6.49114e-06L13.7422 13ZM13.7422 -6.49114e-06L162.242 0L13.7422 -6.49114e-06ZM162.242 14L13.7422 14L13.7422 12L162.242 12L162.242 14Z" fill="#2E2E2E" mask="url(#path-5-inside-2_742_69895)"></path><rect x="44.7552" y="21.5" width="86.4738" height="23.5" rx="2.5" fill="#232323" stroke="#2E2E2E"></rect><rect x="44.7552" y="51.5" width="86.4738" height="23.5" rx="2.5" fill="#232323" stroke="#2E2E2E"></rect><rect x="52.9406" y="28" width="19.2318" height="1.5" rx="0.75" fill="#A0A0A0"></rect><rect x="52.9406" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#A0A0A0"></rect><rect x="78.3762" y="28" width="19.2318" height="1.5" rx="0.75" fill="#EDEDED"></rect><rect x="78.3762" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#EDEDED"></rect><rect x="78.3762" y="33.25" width="44.0471" height="1.5" rx="0.75" fill="#EDEDED"></rect><rect x="78.3762" y="61.75" width="44.0471" height="1.5" rx="0.75" fill="#EDEDED"></rect><rect x="18.4922" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#3ECF8E"></rect><rect x="44.2552" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#707070"></rect><rect x="69.5052" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#707070"></rect><rect x="101.923" y="28" width="20.5" height="1.5" rx="0.75" fill="#FFB224"></rect><rect x="5.36719" y="4.625" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="5.36719" y="13.375" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="5.36719" y="20.875" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="5.36719" y="28.375" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="5.36719" y="35.875" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="5.36719" y="78.875" width="3.75" height="3.75" rx="1" fill="#707070"></rect><mask id="mask0_742_69895" maskUnits="userSpaceOnUse" x="32" y="0" width="131" height="88"><path d="M130.534 2.34842e-05L32.4507 88H162.131V0L130.534 2.34842e-05Z" fill="black"></path></mask><g mask="url(#mask0_742_69895)"><rect x="0.742188" width="161.5" height="88" fill="#F8F9FA"></rect><mask id="path-27-inside-3_742_69895" fill="white"><path d="M156.242 -2.62268e-07C159.556 -1.17421e-07 162.242 2.68629 162.242 6L162.242 13L13.7422 13L13.7422 -6.49114e-06L156.242 -2.62268e-07Z"></path></mask><path d="M156.242 -2.62268e-07C159.556 -1.17421e-07 162.242 2.68629 162.242 6L162.242 13L13.7422 13L13.7422 -6.49114e-06L156.242 -2.62268e-07Z" fill="#F8F9FA"></path><path d="M162.242 0L162.242 13L162.242 0ZM13.7422 13L13.7422 -6.49114e-06L13.7422 13ZM13.7422 -6.49114e-06L162.242 0L13.7422 -6.49114e-06ZM162.242 14L13.7422 14L13.7422 12L162.242 12L162.242 14Z" fill="#E6E8EB" mask="url(#path-27-inside-3_742_69895)"></path><rect x="44.7552" y="21.5" width="86.4738" height="23.5" rx="2.5" fill="#FCFCFC" stroke="#E6E8EB"></rect><rect x="44.7552" y="51.5" width="86.4738" height="23.5" rx="2.5" fill="#FCFCFC" stroke="#E6E8EB"></rect><rect x="52.9406" y="28" width="19.2318" height="1.5" rx="0.75" fill="#525252"></rect><rect x="52.9406" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#525252"></rect><rect x="78.3762" y="28" width="19.2318" height="1.5" rx="0.75" fill="#11181C"></rect><rect x="78.3762" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#11181C"></rect><rect x="78.3762" y="33.25" width="44.0471" height="1.5" rx="0.75" fill="#11181C"></rect><rect x="78.3762" y="61.75" width="44.0471" height="1.5" rx="0.75" fill="#11181C"></rect><rect x="18.4922" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#3FCF8E"></rect><rect x="44.2552" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#B2B2B2"></rect><rect x="69.5052" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#B2B2B2"></rect><rect x="101.923" y="28" width="20.5" height="1.5" rx="0.75" fill="#FFB224"></rect></g></g><rect x="1.24219" y="0.5" width="160.5" height="87" rx="5.5" stroke="#2E2E2E"></rect><defs><clipPath id="clip0_742_69895"><rect x="0.742188" width="161.5" height="88" rx="6" fill="white"></rect></clipPath></defs>
+                  </svg>
+                </div>
+                <div class="text-center text-[11.5px] font-medium mt-2 text-[var(--text)]">System</div>
+              </div>
+
+              <!-- Dark Theme -->
+              <div class="cursor-pointer group" onclick="showToast('info', 'Dark theme selected')">
+                <div class="p-1 rounded-[10px] border-2 border-transparent group-hover:border-[var(--line-strong)] bg-white/5 transition-colors">
+                  <svg class="w-full h-auto block rounded-md" viewBox="0 0 163 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_701_65549)"><rect x="0.742188" width="161.5" height="88" rx="6" fill="#121212"></rect><mask id="path-3-inside-1_701_65549" fill="white"><path d="M0.742188 6C0.742188 2.68629 3.42848 0 6.74219 0H13.7422V88H6.74219C3.42848 88 0.742188 85.3137 0.742188 82V6Z"></path></mask><path d="M0.742188 6C0.742188 2.68629 3.42848 0 6.74219 0H13.7422V88H6.74219C3.42848 88 0.742188 85.3137 0.742188 82V6Z" fill="#121212"></path><path d="M0.742188 0H13.7422H0.742188ZM13.7422 88H0.742188H13.7422ZM0.742188 88V0V88ZM14.7422 0V88H12.7422V0H14.7422Z" fill="#292929" mask="url(#path-3-inside-1_701_65549)"></path><mask id="path-5-inside-2_701_65549" fill="white"><path d="M156.242 -2.62268e-07C159.556 -1.17421e-07 162.242 2.68629 162.242 6L162.242 13L13.7422 13L13.7422 -6.49114e-06L156.242 -2.62268e-07Z"></path></mask><path d="M156.242 -2.62268e-07C159.556 -1.17421e-07 162.242 2.68629 162.242 6L162.242 13L13.7422 13L13.7422 -6.49114e-06L156.242 -2.62268e-07Z" fill="#121212"></path><path d="M162.242 0L162.242 13L162.242 0ZM13.7422 13L13.7422 -6.49114e-06L13.7422 13ZM13.7422 -6.49114e-06L162.242 0L13.7422 -6.49114e-06ZM162.242 14L13.7422 14L13.7422 12L162.242 12L162.242 14Z" fill="#292929" mask="url(#path-5-inside-2_701_65549)"></path><rect x="44.7552" y="21.5" width="86.4738" height="23.5" rx="2.5" fill="#1F1F1F" stroke="#292929"></rect><rect x="44.7552" y="51.5" width="86.4738" height="23.5" rx="2.5" fill="#1F1F1F" stroke="#292929"></rect><rect x="52.9406" y="28" width="19.2318" height="1.5" rx="0.75" fill="#B4B4B4"></rect><rect x="52.9406" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#B4B4B4"></rect><rect x="78.3762" y="28" width="19.2318" height="1.5" rx="0.75" fill="#FAFAFA"></rect><rect x="78.3762" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#FAFAFA"></rect><rect x="78.3762" y="33.25" width="44.0471" height="1.5" rx="0.75" fill="#FAFAFA"></rect><rect x="78.3762" y="61.75" width="44.0471" height="1.5" rx="0.75" fill="#FAFAFA"></rect><rect x="18.4922" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#3ECF8E"></rect><rect x="44.2552" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#4D4D4D"></rect><rect x="69.5052" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#4D4D4D"></rect><rect x="101.923" y="28" width="20.5" height="1.5" rx="0.75" fill="#DB8E00"></rect><rect x="5.36719" y="4.625" width="3.75" height="3.75" rx="1" fill="#4D4D4D"></rect><rect x="5.36719" y="13.375" width="3.75" height="3.75" rx="1" fill="#4D4D4D"></rect><rect x="5.36719" y="20.875" width="3.75" height="3.75" rx="1" fill="#4D4D4D"></rect><rect x="5.36719" y="28.375" width="3.75" height="3.75" rx="1" fill="#4D4D4D"></rect><rect x="5.36719" y="35.875" width="3.75" height="3.75" rx="1" fill="#4D4D4D"></rect><rect x="5.36719" y="78.875" width="3.75" height="3.75" rx="1" fill="#4D4D4D"></rect></g><rect x="1.24219" y="0.5" width="160.5" height="87" rx="5.5" stroke="#292929"></rect><defs><clipPath id="clip0_701_65549"><rect x="0.742188" width="161.5" height="88" rx="6" fill="white"></rect></clipPath></defs>
+                  </svg>
+                </div>
+                <div class="text-center text-[11.5px] font-medium mt-2 text-[var(--text-dim)] group-hover:text-[var(--text)] transition-colors">Dark</div>
+              </div>
+
+              <!-- Light Theme -->
+              <div class="cursor-pointer group" onclick="showToast('info', 'Light mode is coming soon')">
+                <div class="p-1 rounded-[10px] border-2 border-transparent group-hover:border-[var(--line-strong)] bg-white/5 transition-colors">
+                  <svg class="w-full h-auto block rounded-md" viewBox="0 0 162 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_701_65608)"><rect x="0.242188" width="161.5" height="88" rx="6" fill="#F8F9FA"></rect><mask id="path-3-inside-1_701_65608" fill="white"><path d="M0.242188 6C0.242188 2.68629 2.92848 0 6.24219 0H13.2422V88H6.24219C2.92848 88 0.242188 85.3137 0.242188 82V6Z"></path></mask><path d="M0.242188 6C0.242188 2.68629 2.92848 0 6.24219 0H13.2422V88H6.24219C2.92848 88 0.242188 85.3137 0.242188 82V6Z" fill="#F8F9FA"></path><path d="M0.242188 0H13.2422H0.242188ZM13.2422 88H0.242188H13.2422ZM0.242188 88V0V88ZM14.2422 0V88H12.2422V0H14.2422Z" fill="#E6E8EB" mask="url(#path-3-inside-1_701_65608)"></path><mask id="path-5-inside-2_701_65608" fill="white"><path d="M155.742 -2.62268e-07C159.056 -1.17421e-07 161.742 2.68629 161.742 6L161.742 13L13.2422 13L13.2422 -6.49114e-06L155.742 -2.62268e-07Z"></path></mask><path d="M155.742 -2.62268e-07C159.056 -1.17421e-07 161.742 2.68629 161.742 6L161.742 13L13.2422 13L13.2422 -6.49114e-06L155.742 -2.62268e-07Z" fill="#F8F9FA"></path><path d="M161.742 0L161.742 13L161.742 0ZM13.2422 13L13.2422 -6.49114e-06L13.2422 13ZM13.2422 -6.49114e-06L161.742 0L13.2422 -6.49114e-06ZM161.742 14L13.2422 14L13.2422 12L161.742 12L161.742 14Z" fill="#E6E8EB" mask="url(#path-5-inside-2_701_65608)"></path><rect x="44.2552" y="21.5" width="86.4738" height="23.5" rx="2.5" fill="#FCFCFC" stroke="#E6E8EB"></rect><rect x="44.2552" y="51.5" width="86.4738" height="23.5" rx="2.5" fill="#FCFCFC" stroke="#E6E8EB"></rect><rect x="52.4406" y="28" width="19.2318" height="1.5" rx="0.75" fill="#525252"></rect><rect x="52.4406" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#525252"></rect><rect x="77.8762" y="28" width="19.2318" height="1.5" rx="0.75" fill="#11181C"></rect><rect x="77.8762" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#11181C"></rect><rect x="77.8762" y="33.25" width="44.0471" height="1.5" rx="0.75" fill="#11181C"></rect><rect x="77.8762" y="61.75" width="44.0471" height="1.5" rx="0.75" fill="#11181C"></rect><rect x="17.9922" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#3FCF8E"></rect><rect x="43.7552" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#B2B2B2"></rect><rect x="69.0052" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#B2B2B2"></rect><rect x="101.423" y="28" width="20.5" height="1.5" rx="0.75" fill="#FFB224"></rect><rect x="4.86719" y="4.625" width="3.75" height="3.75" rx="1" fill="#B2B2B2"></rect><rect x="4.86719" y="13.375" width="3.75" height="3.75" rx="1" fill="#B2B2B2"></rect><rect x="4.86719" y="20.875" width="3.75" height="3.75" rx="1" fill="#B2B2B2"></rect><rect x="4.86719" y="28.375" width="3.75" height="3.75" rx="1" fill="#B2B2B2"></rect><rect x="4.86719" y="35.875" width="3.75" height="3.75" rx="1" fill="#B2B2B2"></rect><rect x="4.86719" y="78.875" width="3.75" height="3.75" rx="1" fill="#B2B2B2"></rect></g><rect x="0.742188" y="0.5" width="160.5" height="87" rx="5.5" stroke="#E6E8EB"></rect><defs><clipPath id="clip0_701_65608"><rect x="0.242188" width="161.5" height="88" rx="6" fill="white"></rect></clipPath></defs>
+                  </svg>
+                </div>
+                <div class="text-center text-[11.5px] font-medium mt-2 text-[var(--text-dim)] group-hover:text-[var(--text)] transition-colors">Light</div>
+              </div>
+
+              <!-- Classic Dark Theme -->
+              <div class="cursor-pointer group" onclick="showToast('info', 'Classic Dark theme selected')">
+                <div class="p-1 rounded-[10px] border-2 border-transparent group-hover:border-[var(--line-strong)] bg-white/5 transition-colors">
+                  <svg class="w-full h-auto block rounded-md" viewBox="0 0 162 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g clip-path="url(#clip0_701_65535)"><rect x="0.242188" width="161.5" height="88" rx="6" fill="#1C1C1C"></rect><mask id="path-3-inside-1_701_65535" fill="white"><path d="M0.242188 6C0.242188 2.68629 2.92848 0 6.24219 0H13.2422V88H6.24219C2.92848 88 0.242188 85.3137 0.242188 82V6Z"></path></mask><path d="M0.242188 6C0.242188 2.68629 2.92848 0 6.24219 0H13.2422V88H6.24219C2.92848 88 0.242188 85.3137 0.242188 82V6Z" fill="#1C1C1C"></path><path d="M0.242188 0H13.2422H0.242188ZM13.2422 88H0.242188H13.2422ZM0.242188 88V0V88ZM14.2422 0V88H12.2422V0H14.2422Z" fill="#2E2E2E" mask="url(#path-3-inside-1_701_65535)"></path><mask id="path-5-inside-2_701_65535" fill="white"><path d="M155.742 -2.62268e-07C159.056 -1.17421e-07 161.742 2.68629 161.742 6L161.742 13L13.2422 13L13.2422 -6.49114e-06L155.742 -2.62268e-07Z"></path></mask><path d="M155.742 -2.62268e-07C159.056 -1.17421e-07 161.742 2.68629 161.742 6L161.742 13L13.2422 13L13.2422 -6.49114e-06L155.742 -2.62268e-07Z" fill="#1C1C1C"></path><path d="M161.742 0L161.742 13L161.742 0ZM13.2422 13L13.2422 -6.49114e-06L13.2422 13ZM13.2422 -6.49114e-06L161.742 0L13.2422 -6.49114e-06ZM161.742 14L13.2422 14L13.2422 12L161.742 12L161.742 14Z" fill="#2E2E2E" mask="url(#path-5-inside-2_701_65535)"></path><rect x="44.2552" y="21.5" width="86.4738" height="23.5" rx="2.5" fill="#232323" stroke="#2E2E2E"></rect><rect x="44.2552" y="51.5" width="86.4738" height="23.5" rx="2.5" fill="#232323" stroke="#2E2E2E"></rect><rect x="52.4406" y="28" width="19.2318" height="1.5" rx="0.75" fill="#A0A0A0"></rect><rect x="52.4406" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#A0A0A0"></rect><rect x="77.8762" y="28" width="19.2318" height="1.5" rx="0.75" fill="#EDEDED"></rect><rect x="77.8762" y="56.5" width="19.2318" height="1.5" rx="0.75" fill="#EDEDED"></rect><rect x="77.8762" y="33.25" width="44.0471" height="1.5" rx="0.75" fill="#EDEDED"></rect><rect x="77.8762" y="61.75" width="44.0471" height="1.5" rx="0.75" fill="#EDEDED"></rect><rect x="17.9922" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#3ECF8E"></rect><rect x="43.7552" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#707070"></rect><rect x="69.0052" y="4.625" width="20.5" height="3.75" rx="1.875" fill="#707070"></rect><rect x="101.423" y="28" width="20.5" height="1.5" rx="0.75" fill="#FFB224"></rect><rect x="4.86719" y="4.625" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="4.86719" y="13.375" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="4.86719" y="20.875" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="4.86719" y="28.375" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="4.86719" y="35.875" width="3.75" height="3.75" rx="1" fill="#707070"></rect><rect x="4.86719" y="78.875" width="3.75" height="3.75" rx="1" fill="#707070"></rect></g><rect x="0.742188" y="0.5" width="160.5" height="87" rx="5.5" stroke="#2E2E2E"></rect><defs><clipPath id="clip0_701_65535"><rect x="0.242188" width="161.5" height="88" rx="6" fill="white"></rect></clipPath></defs>
+                  </svg>
+                </div>
+                <div class="text-center text-[11.5px] font-medium mt-2 text-[var(--text-dim)] group-hover:text-[var(--text)] transition-colors">Classic Dark</div>
+              </div>
+
             </div>
-            <div class="switch on" onclick="showToast('info','Light mode is coming in a future update')"></div>
           </div>
+          
+          <div class="border-t" style="border-color:var(--line)"></div>
+          
           <div>
             <div class="text-[13.5px] font-medium mb-2.5">Accent Color</div>
             <div class="flex gap-2.5" id="accent-swatches"></div>
           </div>
+          
         </div>
 
-        <div class="mb-3 text-[12px] font-semibold uppercase tracking-wide" style="color:var(--text-faint)">About</div>
-        <div class="glass card divide-y" style="--tw-divide-opacity:1; border-color:var(--line)">
+        <div class="mb-3 text-[12px] font-semibold uppercase tracking-wide" style="color:var(--text-faint)">Developer Settings</div><div class="glass card divide-y" style="--tw-divide-opacity:1; border-color:var(--line)">
           <div class="flex items-center justify-between px-4 py-3 text-[13.5px]"><span style="color:var(--text-dim)">App Version</span><span class="mono">0.3.2 (32)</span></div>
+
+          <div class="flex items-center justify-between px-4 py-3 text-[13.5px]" style="border-color:var(--line)"><span style="color:var(--text-dim)">Device Info</span><span class="mono" id="deviceInfo"></span></div>
+
           <div class="flex items-center justify-between px-4 py-3 text-[13.5px]" style="border-color:var(--line)"><span style="color:var(--text-dim)">API Version</span><span class="mono">v1</span></div>
+
           <div class="flex items-center justify-between px-4 py-3 text-[13.5px]" style="border-color:var(--line)"><span style="color:var(--text-dim)">Backend Status</span><span class="flex items-center gap-1.5"><span class="status-dot on"></span>Operational</span></div>
         </div>
       </section>
@@ -429,16 +476,14 @@ const ROUTE_META = {
   settings:{title:'Settings', sub:'Manage your account'},
 };
 
-// Cập nhật hàm navigate để đổi hash trên URL gán trực tiếp
 function navigate(route){
-  if(window.location.hash !== `?${route}`) {
+  if(window.location.hash !== `#${route}`) {
     window.location.hash = route;
-    return; // Sẽ kích hoạt sự kiện hashchange để render view
+    return;
   }
   renderView(route);
 }
 
-// Tách logic render view cũ ra hàm riêng để xử lý khi hash thay đổi
 function renderView(route) {
   Sayraa.currentRoute = route;
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.dataset.view===route));
@@ -454,7 +499,6 @@ function renderView(route) {
   if(soonSection && !soonSection.dataset.rendered) renderComingSoon(soonSection);
 }
 
-// Lắng nghe sự kiện đổi URL Hash từ trình duyệt (Nút Back/Forward hoặc thay đổi thủ công)
 window.addEventListener('hashchange', () => {
   const route = window.location.hash.replace('#', '') || 'dashboard';
   if(ROUTE_META[route]) {
@@ -567,12 +611,11 @@ function openLoginSheet(){
 function startOAuth(providerId, linkToken){
   const p = PROVIDERS.find(x=>x.id===providerId);
   const url = new URL(`${OAUTH_BASE}/login/${providerId}`);
-  if(linkToken) url.searchParams.set('token', linkToken); // Truyền token nếu đang Link Account
+  if(linkToken) url.searchParams.set('token', linkToken);
   
   closeSheet();
   showToast('info', `Redirecting to ${p.name}…`);
   
-  // Chuyển hướng sang Backend để xử lý OAuth
   setTimeout(() => {
     window.location.href = url.toString();
   }, 800);
@@ -604,7 +647,7 @@ async function checkOAuthCallback(){
         name: payload.username || 'User',
         email: payload.email || 'No email provided',
         avatar: payload.avatar,
-        providers: payload.providers || [], // Mảng provider từ Database
+        providers: payload.providers || [],
         token: token
       };
       sessionStorage.setItem('sayraa_token', token);
@@ -617,7 +660,6 @@ async function checkOAuthCallback(){
     const targetProvider = params.get('provider');
     showToast('success', `Linked ${targetProvider.toUpperCase()} successfully`);
     
-    // Thêm provider mới vào state hiện tại
     if(Sayraa.user && !Sayraa.user.providers.includes(targetProvider)){
       Sayraa.user.providers.push(targetProvider);
       sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
@@ -649,7 +691,6 @@ async function confirmUnlink(providerId){
       return;
     }
     
-    // Cập nhật State sau khi gỡ liên kết thành công
     Sayraa.user.providers = Sayraa.user.providers.filter(id=>id!==providerId);
     sessionStorage.setItem('sayraa_user', JSON.stringify(Sayraa.user));
     showToast('success', `Unlinked ${p.name} successfully.`);
@@ -682,7 +723,22 @@ function logout(){
   `);
 }
 
-function performLogout() {
+async function performLogout() {
+  if (Sayraa.user) {
+    try {
+      // Báo cho backend thu hồi session
+      await fetch(`${OAUTH_BASE}/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Sayraa.user.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (e) {
+      console.error('Logout failed:', e);
+    }
+  }
+
   Sayraa.user = null;
   sessionStorage.removeItem('sayraa_token');
   sessionStorage.removeItem('sayraa_user');
@@ -765,7 +821,7 @@ function renderAuthUI(){
   }).join('<div class="border-t" style="border-color:var(--line)"></div>');
 }
 
-/* ============ GENSHIN MODULE (mock data seeded from API docs) ============ */
+/* ============ GENSHIN MODULE ============ */
 const GENSHIN_MOCK = {
   banners: { status:'success', timestamp:'2026-06-19T16:45:00.000Z', data:[
     { version:'6.6 (May 20, 2026)', phase:'Phase 1', new:['Nicole','Prune'], rerun:['Durin'] },
@@ -1012,7 +1068,7 @@ function timeAgo(iso){
   return `${Math.round(diff/60)}h ago`;
 }
 
-/* ============ SETTINGS: accent swatches ============ */
+/* ============ SETTINGS ============ */
 function renderAccentSwatches(){
   const wrap = document.getElementById('accent-swatches');
   wrap.innerHTML = ACCENTS.map(c=>`<button class="accent-swatch ${c===Sayraa.accent?'active':''}" style="background:${c}" onclick="setAccent('${c}', this)"></button>`).join('');
@@ -1026,16 +1082,42 @@ function setAccent(c, el){
   showToast('success','Accent color updated');
 }
 
+function getDeviceInfo() {
+    const ua = navigator.userAgent;
+
+    let device = "Unknown";
+    let os = "Unknown";
+
+    if (/iPhone/i.test(ua)) device = "iPhone";
+    else if (/iPad/i.test(ua)) device = "iPad";
+    else if (/Android/i.test(ua)) device = "Android";
+    else if (/Macintosh|Mac OS X/i.test(ua)) device = "Mac";
+    else if (/Windows/i.test(ua)) device = "Windows";
+    else if (/Linux/i.test(ua)) device = "Linux";
+
+    const ios = ua.match(/OS (\d+)[._](\d+)(?:[._](\d+))?/);
+    if (ios) os = `iOS ${ios[1]}.${ios[2]}${ios[3] ? "." + ios[3] : ""}`;
+
+    const android = ua.match(/Android (\d+(?:\.\d+)?)/);
+    if (android) os = `Android ${android[1]}`;
+
+    const win = ua.match(/Windows NT ([\d.]+)/);
+    if (win) os = `Windows ${win[1]}`;
+
+    const mac = ua.match(/Mac OS X (\d+)[._](\d+)(?:[._](\d+))?/);
+    if (mac && device === "Mac") os = `macOS ${mac[1]}.${mac[2]}${mac[3] ? "." + mac[3] : ""}`;
+
+    return `${device} (${os})`;
+}
+
 /* ============ INIT ============ */
 function init(){
-  // Tải lại phiên đăng nhập từ bộ nhớ tạm trình duyệt trước nếu có
   const savedToken = sessionStorage.getItem('sayraa_token');
   const savedUser = sessionStorage.getItem('sayraa_user');
   if(savedToken && savedUser) {
     Sayraa.user = JSON.parse(savedUser);
   }
 
-  // Khởi tạo trạng thái View ban đầu dựa trên Hash URL hiện tại
   const initialRoute = window.location.hash.replace('#', '') || 'dashboard';
   if (ROUTE_META[initialRoute]) {
     renderView(initialRoute);
@@ -1043,9 +1125,12 @@ function init(){
     window.location.hash = 'dashboard';
   }
 
-  // Check xem có phải vừa đi qua link điều hướng OAuth về không
   checkOAuthCallback();
   
+  // Tránh lỗi nếu phần tử deviceInfo không tồn tại
+  const deviceInfoEl = document.getElementById("deviceInfo");
+  if(deviceInfoEl) deviceInfoEl.textContent = getDeviceInfo();
+
   renderDashboard();
   renderAuthUI();
   renderAccentSwatches();
@@ -1053,6 +1138,7 @@ function init(){
 }
 init();
 </script>
+
 
 </body>
 </html>
