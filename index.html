@@ -1169,36 +1169,16 @@ async function deleteApiKey() {
 
 /* ============ GENSHIN MODULE ============ */
 const GENSHIN_BASE = 'https://api.sayraa.xyz/api/v1/genshin';
-const ELEMENT_COLOR = {
-  Pyro: '#f4586b',
-  Hydro: '#5aa7ef',
-  Dendro: '#8b9a68',
-  Electro: '#b48ef0',
-  Anemo: '#34d6b4',
-  Cryo: '#8fd8ef',
-  Geo: '#f5a623'
-};
+const ELEMENT_COLOR = {Pyro:'#f4586b', Hydro:'#5aa7ef', Dendro:'#8b9a68', Electro:'#b48ef0', Anemo:'#34d6b4', Cryo:'#8fd8ef', Geo:'#f5a623'};
 
-// Mock data fallback dành cho tab Rewards Calendar (nếu không có API riêng)
+// Kept for the illustrative Rewards Calendar tab only (no backend endpoint for the monthly grid).
 const GENSHIN_MOCK = {
-  checkinList: {
-    ok: true,
-    month: 7,
-    resign_available: true,
-    has_month_card: false,
-    monthly_awards: [
-      { day: 1, name: "Adventurer's EXP", count: 3 },
-      { day: 2, name: 'Mora', count: 10000 },
-      { day: 3, name: 'Fine Enhancement Ore', count: 3 },
-      { day: 4, name: 'Primogem', count: 20 },
-      { day: 5, name: "Hero's Wit", count: 2 },
-      { day: 6, name: 'Mystic Enhancement Ore', count: 2 },
-      { day: 7, name: 'Primogem', count: 30 }
+  checkinList: { ok:true, month:7, resign_available:true, has_month_card:false,
+    monthly_awards:[
+      {day:1,name:'Adventurer\'s EXP',count:3},{day:2,name:'Mora',count:10000},{day:3,name:'Fine Enhancement Ore',count:3},
+      {day:4,name:'Primogem',count:20},{day:5,name:'Hero\'s Wit',count:2},{day:6,name:'Mystic Enhancement Ore',count:2},{day:7,name:'Primogem',count:30},
     ],
-    extra_awards: [
-      { id: 228, sign_day_required: 2, count: 20, is_highlight: true }
-    ]
-  }
+    extra_awards:[ {id:228, sign_day_required:2, count:20, is_highlight:true} ] },
 };
 
 /* ---- account state ---- */
@@ -1206,74 +1186,38 @@ let genshinAccounts = [];
 let genshinActiveId = null;
 let currentGenshinTab = 'banners';
 
-/**
- * Hàm lấy cấu hình Headers & Options cho fetch, 
- * đảm bảo luôn đính kèm Bearer JWT và Cookie Session (CORS Support)
- */
-function genshinFetchOptions(method = 'GET', body = null) {
+function genshinAuthHeaders(json){
+  const h = {};
   const token = (Sayraa.user && Sayraa.user.token) || localStorage.getItem('sayraa_token');
-  
-  const headers = {};
-  if (token) {
-    headers['Authorization'] = `Bearer ${token.trim()}`;
-  }
-  if (body) {
-    headers['Content-Type'] = 'application/json';
-  }
-
-  const options = {
-    method: method,
-    headers: headers,
-    credentials: 'include' // Đảm bảo tự động đính kèm Session Cookie nếu backend có dùng Cookie
-  };
-
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
-
-  return options;
+  if(token) h['Authorization'] = `Bearer ${token}`;
+  if(json) h['Content-Type'] = 'application/json';
+  return h;
 }
 
-function activeGenshinAccount() {
-  return genshinAccounts.find(a => a.id === genshinActiveId) || null;
+function activeGenshinAccount(){
+  return genshinAccounts.find(a=>a.id===genshinActiveId) || null;
 }
 
-async function loadGenshinAccounts() {
-  const token = (Sayraa.user && Sayraa.user.token) || localStorage.getItem('sayraa_token');
-  if (!token) {
-    genshinAccounts = [];
-    genshinActiveId = null;
-    renderAccountBar();
-    return;
-  }
-
-  try {
-    const res = await fetch(`${GENSHIN_BASE}/accounts`, genshinFetchOptions('GET'));
+async function loadGenshinAccounts(){
+  if(!Sayraa.user){ genshinAccounts = []; genshinActiveId = null; renderAccountBar(); return; }
+  try{
+    const res = await fetch(`${GENSHIN_BASE}/accounts`, { headers: genshinAuthHeaders() });
     const data = await res.json();
-    
-    if (res.ok && data.success && Array.isArray(data.data)) {
-      genshinAccounts = data.data;
-      const def = genshinAccounts.find(a => a.is_default);
-      genshinActiveId = def ? def.id : (genshinAccounts[0] ? genshinAccounts[0].id : null);
-    } else {
-      genshinAccounts = [];
-      genshinActiveId = null;
-    }
-  } catch (e) {
-    console.error('[Genshin Accounts Fetch Error]:', e);
+    genshinAccounts = (data.success && data.data) ? data.data : [];
+    const def = genshinAccounts.find(a=>a.is_default);
+    genshinActiveId = def ? def.id : (genshinAccounts[0] ? genshinAccounts[0].id : null);
+  } catch(e){
     genshinAccounts = [];
     genshinActiveId = null;
   }
   renderAccountBar();
 }
 
-function renderAccountBar() {
+function renderAccountBar(){
   const bar = document.getElementById('genshin-account-bar');
-  if (!bar) return;
+  if(!bar) return;
 
-  const token = (Sayraa.user && Sayraa.user.token) || localStorage.getItem('sayraa_token');
-
-  if (!token) {
+  if(!Sayraa.user){
     bar.innerHTML = `
       <div class="glass card p-4 flex items-center justify-between gap-3">
         <div class="text-[13px]" style="color:var(--text-dim)">Sign in to link a Genshin account and unlock check-in, daily note &amp; stats.</div>
@@ -1282,7 +1226,7 @@ function renderAccountBar() {
     return;
   }
 
-  if (!genshinAccounts.length) {
+  if(!genshinAccounts.length){
     bar.innerHTML = `
       <div class="glass card p-4 flex items-center justify-between gap-3">
         <div class="text-[13px]" style="color:var(--text-dim)">No Genshin account linked yet.</div>
@@ -1292,17 +1236,15 @@ function renderAccountBar() {
   }
 
   const acc = activeGenshinAccount();
-  if (!acc) return;
-
   bar.innerHTML = `
     <div class="glass card p-4 flex items-center gap-3">
       <div class="icon-tile" style="background:rgba(245,166,35,.14); color:var(--amber)"><i class="fa-solid fa-user"></i></div>
       <div class="flex-1 min-w-0">
         ${genshinAccounts.length > 1 ? `
           <select class="input text-[13px] py-1.5 px-2" style="width:auto" onchange="switchGenshinAccount(this.value)">
-            ${genshinAccounts.map(a => `<option value="${a.id}" ${a.id === genshinActiveId ? 'selected' : ''}>${a.nickname || ('UID ' + a.uid)}${a.is_default ? ' ★' : ''}</option>`).join('')}
+            ${genshinAccounts.map(a=>`<option value="${a.id}" ${a.id===genshinActiveId?'selected':''}>${a.nickname || ('UID '+a.uid)}${a.is_default?' ★':''}</option>`).join('')}
           </select>
-        ` : `<div class="font-semibold text-[13.5px]">${acc.nickname || ('UID ' + acc.uid)}</div>`}
+        ` : `<div class="font-semibold text-[13.5px]">${acc.nickname || ('UID '+acc.uid)}</div>`}
         <div class="text-[11.5px] mono mt-1" style="color:var(--text-faint)">UID ${acc.uid} · ${acc.server}${acc.is_default ? ' · Default' : ''}</div>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="openAccountSettingsSheet(${acc.id})"><i class="fa-solid fa-sliders"></i></button>
@@ -1310,14 +1252,14 @@ function renderAccountBar() {
     </div>`;
 }
 
-function switchGenshinAccount(id) {
+function switchGenshinAccount(id){
   genshinActiveId = Number(id);
   renderAccountBar();
   renderGenshinPanel(currentGenshinTab);
 }
 
 /* ---- add account sheet ---- */
-function openAddAccountSheet() {
+function openAddAccountSheet(){
   openSheet(`
     <h3 class="display font-bold text-[16px] mb-1">Add Genshin Account</h3>
     <p class="text-[13px] mb-4" style="color:var(--text-dim)">Your cookie is encrypted at rest and used only to sync your account.</p>
@@ -1338,48 +1280,45 @@ function openAddAccountSheet() {
   `);
 }
 
-function toggleCookieMask(btn) {
+function toggleCookieMask(btn){
   const ta = document.getElementById('ga-cookie');
   const currentlyMasked = ta.style.webkitTextSecurity !== 'none';
   ta.style.webkitTextSecurity = currentlyMasked ? 'none' : 'disc';
   btn.innerHTML = currentlyMasked ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
 }
 
-async function submitAddAccount() {
-  const token = (Sayraa.user && Sayraa.user.token) || localStorage.getItem('sayraa_token');
-  if (!token) return showToast('error', 'Sign in first');
-
+async function submitAddAccount(){
+  if(!Sayraa.user) return showToast('error', 'Sign in first');
   const cookie = document.getElementById('ga-cookie').value.trim();
   const uid = document.getElementById('ga-uid').value.trim();
   const server = document.getElementById('ga-server').value;
-  if (!cookie || !uid) return showToast('error', 'Cookie and UID are required');
+  if(!cookie || !uid) return showToast('error', 'Cookie and UID are required');
 
   const btn = document.getElementById('ga-submit');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Linking...';
+  btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Linking...';
 
-  try {
-    const res = await fetch(`${GENSHIN_BASE}/accounts`, genshinFetchOptions('POST', { cookie, uid, server }));
+  try{
+    const res = await fetch(`${GENSHIN_BASE}/accounts`, {
+      method: 'POST',
+      headers: genshinAuthHeaders(true),
+      body: JSON.stringify({ cookie, uid, server })
+    });
     const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.message || 'Failed to add account');
+    if(!res.ok || !data.success) throw new Error(data.message || 'Failed to add account');
 
     closeSheet();
     showToast('success', data.message || `Linked ${data.data?.nickname || 'account'} successfully`);
     await loadGenshinAccounts();
-    if (data.data?.id) {
-      genshinActiveId = data.data.id;
-      renderAccountBar();
-    }
+    if(data.data?.id){ genshinActiveId = data.data.id; renderAccountBar(); }
     renderGenshinPanel(currentGenshinTab);
-  } catch (err) {
+  } catch(err){
     showToast('error', err.message || 'Failed to add account');
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-link"></i> Link account';
+    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-link"></i> Link account';
   }
 }
 
 /* ---- account settings sheet ---- */
-function genshinToggleRow(id, label, val, accId, key) {
+function genshinToggleRow(id, label, val, accId, key){
   return `
     <div class="flex items-center justify-between">
       <span class="text-[13.5px]">${label}</span>
@@ -1387,11 +1326,11 @@ function genshinToggleRow(id, label, val, accId, key) {
     </div>`;
 }
 
-function openAccountSettingsSheet(id) {
-  const acc = genshinAccounts.find(a => a.id === id);
-  if (!acc) return;
+function openAccountSettingsSheet(id){
+  const acc = genshinAccounts.find(a=>a.id===id);
+  if(!acc) return;
   openSheet(`
-    <h3 class="display font-bold text-[16px] mb-1">${acc.nickname || ('UID ' + acc.uid)}</h3>
+    <h3 class="display font-bold text-[16px] mb-1">${acc.nickname || ('UID '+acc.uid)}</h3>
     <p class="text-[12.5px] mb-4 mono" style="color:var(--text-faint)">UID ${acc.uid} · ${acc.server}</p>
     <div class="space-y-3 mb-5">
       ${genshinToggleRow('ga-tg-checkin', '🔄 Auto check-in', acc.auto_checkin, id, 'auto_checkin')}
@@ -1403,21 +1342,25 @@ function openAccountSettingsSheet(id) {
   `);
 }
 
-async function toggleGenshinSetting(el, accId, key) {
-  if (key === 'is_default' && el.classList.contains('on')) return; // đã là default thì bỏ qua
+async function toggleGenshinSetting(el, accId, key){
+  if(key === 'is_default' && el.classList.contains('on')) return; // already default, no-op
   const isOn = el.classList.contains('on');
   const newVal = !isOn;
-  el.classList.toggle('on'); // optimistic UI update
+  el.classList.toggle('on'); // optimistic
 
-  try {
-    const res = await fetch(`${GENSHIN_BASE}/accounts/${accId}`, genshinFetchOptions('PATCH', { [key]: newVal }));
+  try{
+    const res = await fetch(`${GENSHIN_BASE}/accounts/${accId}`, {
+      method: 'PATCH',
+      headers: genshinAuthHeaders(true),
+      body: JSON.stringify({ [key]: newVal })
+    });
     const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.message);
+    if(!res.ok || !data.success) throw new Error(data.message);
 
-    const acc = genshinAccounts.find(a => a.id === accId);
-    if (acc) {
-      if (key === 'is_default' && newVal) {
-        genshinAccounts.forEach(a => a.is_default = (a.id === accId));
+    const acc = genshinAccounts.find(a=>a.id===accId);
+    if(acc){
+      if(key === 'is_default' && newVal){
+        genshinAccounts.forEach(a=> a.is_default = (a.id===accId));
         genshinActiveId = accId;
       } else {
         acc[key] = newVal;
@@ -1425,88 +1368,85 @@ async function toggleGenshinSetting(el, accId, key) {
     }
     renderAccountBar();
     showToast('success', 'Setting updated');
-  } catch (err) {
-    el.classList.toggle('on'); // revert khi lỗi
+  } catch(err){
+    el.classList.toggle('on'); // revert
     showToast('error', err.message || 'Failed to update setting');
   }
 }
 
-async function deleteGenshinAccount(id) {
-  if (!confirm('Remove this Genshin account? This cannot be undone.')) return;
-  try {
-    const res = await fetch(`${GENSHIN_BASE}/accounts/${id}`, genshinFetchOptions('DELETE'));
+async function deleteGenshinAccount(id){
+  if(!confirm('Remove this Genshin account? This cannot be undone.')) return;
+  try{
+    const res = await fetch(`${GENSHIN_BASE}/accounts/${id}`, { method: 'DELETE', headers: genshinAuthHeaders() });
     const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.message);
+    if(!res.ok || !data.success) throw new Error(data.message);
 
     closeSheet();
     showToast('success', 'Account removed');
     await loadGenshinAccounts();
     renderGenshinPanel(currentGenshinTab);
-  } catch (err) {
+  } catch(err){
     showToast('error', err.message || 'Failed to remove account');
   }
 }
 
 /* ---- shared empty states ---- */
-function genshinSignInPrompt() {
+function genshinSignInPrompt(){
   return `<div class="glass card p-6 text-center">
     <i class="fa-solid fa-lock mb-3 text-[22px]" style="color:var(--text-faint)"></i>
     <p class="text-[13px] mb-3" style="color:var(--text-dim)">Sign in to access account features.</p>
     <button class="btn btn-primary btn-sm" onclick="openLoginSheet()">Sign in</button>
   </div>`;
 }
-
-function genshinNoAccountPrompt() {
+function genshinNoAccountPrompt(){
   return `<div class="glass card p-6 text-center">
     <i class="fa-solid fa-user-plus mb-3 text-[22px]" style="color:var(--text-faint)"></i>
     <p class="text-[13px] mb-3" style="color:var(--text-dim)">Link a Genshin account to see this.</p>
     <button class="btn btn-primary btn-sm" onclick="openAddAccountSheet()">Add account</button>
   </div>`;
 }
-
-function genshinErrorCard(msg) {
+function genshinErrorCard(msg){
   return `<div class="glass card p-5 text-center text-[13px]" style="color:#f4586b">
     <i class="fa-solid fa-circle-exclamation mb-2 text-[20px] block"></i>${msg}
   </div>`;
 }
-
-function formatCountdown(seconds) {
-  if (!seconds || seconds <= 0) return 'now';
-  const h = Math.floor(seconds / 3600);
-  const days = Math.floor(h / 24);
-  if (days >= 1) return `${days}d ${h % 24}h`;
-  return `${h}h ${Math.floor((seconds % 3600) / 60)}m`;
+function formatCountdown(seconds){
+  if(!seconds || seconds <= 0) return 'now';
+  const h = Math.floor(seconds/3600);
+  const days = Math.floor(h/24);
+  if(days >= 1) return `${days}d ${h%24}h`;
+  return `${h}h ${Math.floor((seconds%3600)/60)}m`;
 }
 
-function genshinTab(tab, el) {
+function genshinTab(tab, el){
   currentGenshinTab = tab;
-  document.querySelectorAll('#genshin-tabs .tab-pill').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#genshin-tabs .tab-pill').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   renderGenshinPanel(tab);
 }
 
-function skeletonBlock(h) { return `<div class="skel" style="height:${h}px"></div>`; }
+function skeletonBlock(h){ return `<div class="skel" style="height:${h}px"></div>`; }
 
-function renderGenshinPanel(tab) {
+function renderGenshinPanel(tab){
   const panel = document.getElementById('genshin-panel');
-  if (!panel) return;
+  if(!panel) return;
   panel.innerHTML = `<div class="space-y-3">${skeletonBlock(90)}${skeletonBlock(90)}</div>`;
-  setTimeout(() => {
-    if (tab === 'banners') renderBanners(panel);
-    else if (tab === 'codes') renderCodes(panel);
-    else if (tab === 'notes') renderDailyNote(panel);
-    else if (tab === 'checkin') renderCheckin(panel);
-    else if (tab === 'stats') renderRoleStats(panel);
-    else if (tab === 'calendar') renderCalendar(panel);
+  setTimeout(()=>{
+    if(tab==='banners') renderBanners(panel);
+    else if(tab==='codes') renderCodes(panel);
+    else if(tab==='notes') renderDailyNote(panel);
+    else if(tab==='checkin') renderCheckin(panel);
+    else if(tab==='stats') renderRoleStats(panel);
+    else if(tab==='calendar') renderCalendar(panel);
   }, 350);
 }
 
 /* Public — no auth required */
-async function renderBanners(panel) {
-  try {
-    const res = await fetch(`${GENSHIN_BASE}?type=banner`, genshinFetchOptions('GET'));
+async function renderBanners(panel){
+  try{
+    const res = await fetch(`${GENSHIN_BASE}?type=banner`);
     const d = await res.json();
-    if (!res.ok || d.status !== 'success' || !d.data) throw new Error('Failed to load banners');
+    if(!res.ok || d.status !== 'success' || !d.data) throw new Error('Failed to load banners');
 
     panel.innerHTML = `
       <div class="flex items-center justify-between mb-3">
@@ -1514,28 +1454,28 @@ async function renderBanners(panel) {
         <span class="text-[11px] mono" style="color:var(--text-faint)">synced ${timeAgo(d.timestamp)}</span>
       </div>
       <div class="space-y-3">
-        ${d.data.map(b => `
+        ${d.data.map(b=>`
           <div class="glass card p-4">
             <div class="flex items-center justify-between mb-2.5">
               <span class="pill" style="background:rgba(124,111,240,.14); color:var(--accent)">${b.version} · ${b.name}</span>
               <span class="text-[11.5px]" style="color:var(--text-faint)">${b.phase}</span>
             </div>
             <div class="flex flex-wrap gap-2">
-              ${(b['5_star_featured']?.new || []).map(n => `<span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)"><i class="fa-solid fa-star mr-1 text-[9px]"></i>${n}</span>`).join('')}
-              ${(b['5_star_featured']?.rerun || []).map(n => `<span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-dim)">${n} · rerun</span>`).join('')}
-              ${(b['4_star_featured'] || []).map(n => `<span class="pill" style="background:rgba(255,255,255,.04); color:var(--text-faint)">${n}</span>`).join('')}
+              ${(b['5_star_featured']?.new||[]).map(n=>`<span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)"><i class="fa-solid fa-star mr-1 text-[9px]"></i>${n}</span>`).join('')}
+              ${(b['5_star_featured']?.rerun||[]).map(n=>`<span class="pill" style="background:rgba(255,255,255,.06); color:var(--text-dim)">${n} · rerun</span>`).join('')}
+              ${(b['4_star_featured']||[]).map(n=>`<span class="pill" style="background:rgba(255,255,255,.04); color:var(--text-faint)">${n}</span>`).join('')}
             </div>
           </div>`).join('')}
       </div>
     `;
-  } catch (err) {
+  } catch(err){
     panel.innerHTML = genshinErrorCard('Could not load banner data. Please try again later.');
   }
 }
 
-async function renderCodes(panel) {
+async function renderCodes(panel){
   try {
-    const response = await fetch(`${GENSHIN_BASE}?type=codes`, genshinFetchOptions('GET'));
+    const response = await fetch(`${GENSHIN_BASE}?type=codes`);
     if (!response.ok) throw new Error('Could not reach the API server');
 
     const d = await response.json();
@@ -1547,7 +1487,7 @@ async function renderCodes(panel) {
         <span class="text-[11px] mono" style="color:var(--text-faint)">${d.count} available</span>
       </div>
       <div class="space-y-2.5">
-        ${d.cards.map(c => `
+        ${d.cards.map(c=>`
           <div class="glass card p-4 flex items-center gap-3.5">
             <div class="icon-tile" style="background:rgba(245,166,35,.14); color:var(--amber)"><i class="fa-solid fa-gift"></i></div>
             <div class="flex-1 min-w-0">
@@ -1568,19 +1508,18 @@ async function renderCodes(panel) {
   }
 }
 
-function copyCode(code) { navigator.clipboard?.writeText(code).catch(() => {}); showToast('success', `Copied "${code}"`); }
+function copyCode(code){ navigator.clipboard?.writeText(code).catch(()=>{}); showToast('success', `Copied "${code}"`); }
 
 /* Account-scoped — requires sign-in + linked account */
-async function renderDailyNote(panel) {
-  const token = (Sayraa.user && Sayraa.user.token) || localStorage.getItem('sayraa_token');
-  if (!token) return panel.innerHTML = genshinSignInPrompt();
+async function renderDailyNote(panel){
+  if(!Sayraa.user) return panel.innerHTML = genshinSignInPrompt();
   const acc = activeGenshinAccount();
-  if (!acc) return panel.innerHTML = genshinNoAccountPrompt();
+  if(!acc) return panel.innerHTML = genshinNoAccountPrompt();
 
-  try {
-    const res = await fetch(`${GENSHIN_BASE}/accounts/${acc.id}/daily-note`, genshinFetchOptions('GET'));
+  try{
+    const res = await fetch(`${GENSHIN_BASE}/accounts/${acc.id}/daily-note`, { headers: genshinAuthHeaders() });
     const payload = await res.json();
-    if (!res.ok || !payload.ok) throw new Error(payload.error || payload.message || 'Failed to load daily note');
+    if(!res.ok || !payload.ok) throw new Error(payload.message || 'Failed to load daily note');
     const d = payload.data;
     const resinPct = Math.min(100, Math.round((d.resin.current / d.resin.max) * 100));
 
@@ -1614,7 +1553,7 @@ async function renderDailyNote(panel) {
 
       <h3 class="font-semibold text-[14px] mb-2">Expeditions (${d.expeditions.current_num}/${d.expeditions.max_num})</h3>
       <div class="space-y-2 mb-3.5">
-        ${d.expeditions.list.length ? d.expeditions.list.map(e => `
+        ${d.expeditions.list.length ? d.expeditions.list.map(e=>`
           <div class="glass card p-3.5 flex items-center gap-3">
             <img src="${e.avatar_icon}" class="w-9 h-9 rounded-lg object-cover" onerror="this.style.display='none'">
             <div class="flex-1">
@@ -1639,7 +1578,7 @@ async function renderDailyNote(panel) {
       <div class="glass card p-4">
         <div class="flex items-center justify-between mb-2">
           <span class="text-[13px] font-medium">Archon Quest</span>
-          <span class="pill" style="background:${d.archon_quest_progress.is_finish_all_mainline ? 'rgba(52,214,180,.14)' : 'rgba(245,166,35,.14)'}; color:${d.archon_quest_progress.is_finish_all_mainline ? 'var(--teal)' : 'var(--amber)'}">${d.archon_quest_progress.is_finish_all_mainline ? 'Mainline complete' : 'In progress'}</span>
+          <span class="pill" style="background:${d.archon_quest_progress.is_finish_all_mainline?'rgba(52,214,180,.14)':'rgba(245,166,35,.14)'}; color:${d.archon_quest_progress.is_finish_all_mainline?'var(--teal)':'var(--amber)'}">${d.archon_quest_progress.is_finish_all_mainline ? 'Mainline complete' : 'In progress'}</span>
         </div>
         <div class="flex items-center justify-between">
           <span class="text-[13px] font-medium">Weekly activity</span>
@@ -1647,23 +1586,22 @@ async function renderDailyNote(panel) {
         </div>
       </div>
     `;
-  } catch (err) {
+  } catch(err){
     panel.innerHTML = genshinErrorCard(err.message || 'Failed to load daily note');
   }
 }
 
-async function renderCheckin(panel) {
-  const token = (Sayraa.user && Sayraa.user.token) || localStorage.getItem('sayraa_token');
-  if (!token) return panel.innerHTML = genshinSignInPrompt();
+async function renderCheckin(panel){
+  if(!Sayraa.user) return panel.innerHTML = genshinSignInPrompt();
   const acc = activeGenshinAccount();
-  if (!acc) return panel.innerHTML = genshinNoAccountPrompt();
+  if(!acc) return panel.innerHTML = genshinNoAccountPrompt();
 
   panel.innerHTML = `
     <div class="glass card p-5 mb-4">
       <div class="flex items-center gap-3.5 mb-4">
         <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-bold glass">${(acc.nickname || 'U')[0]}</div>
         <div class="flex-1">
-          <div class="font-semibold text-[14.5px]">${acc.nickname || ('UID ' + acc.uid)}</div>
+          <div class="font-semibold text-[14.5px]">${acc.nickname || ('UID '+acc.uid)}</div>
           <div class="text-[11.5px] mono" style="color:var(--text-faint)">UID ${acc.uid} · ${acc.server}</div>
         </div>
         ${acc.last_checkin_status ? `<span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)">${acc.last_checkin_status}</span>` : ''}
@@ -1676,49 +1614,42 @@ async function renderCheckin(panel) {
   `;
 }
 
-async function runGenshinCheckin(accId) {
+async function runGenshinCheckin(accId){
   const btn = document.getElementById('genshin-checkin-btn');
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking in...';
-  }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking in...'; }
 
-  try {
-    const res = await fetch(`${GENSHIN_BASE}/accounts/${accId}/checkin`, genshinFetchOptions('POST'));
+  try{
+    const res = await fetch(`${GENSHIN_BASE}/accounts/${accId}/checkin`, { method: 'POST', headers: genshinAuthHeaders() });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || data.error || 'Check-in failed');
+    if(!res.ok) throw new Error(data.message || 'Check-in failed');
 
-    if (data.claimed) showToast('success', data.message || 'Checked in successfully');
-    else if (data.already_claimed) showToast('info', data.message || 'Already checked in today');
-    else if (data.captcha) showToast('error', 'HoYoLAB requires a captcha — please check in manually on HoYoLAB');
+    if(data.claimed) showToast('success', data.message || 'Checked in successfully');
+    else if(data.already_claimed) showToast('info', data.message || 'Already checked in today');
+    else if(data.captcha) showToast('error', 'HoYoLAB requires a captcha — please check in manually on HoYoLAB');
     else showToast('info', data.message || 'Check-in submitted');
 
-    const acc = genshinAccounts.find(a => a.id === accId);
-    if (acc) {
+    const acc = genshinAccounts.find(a=>a.id===accId);
+    if(acc){
       acc.last_checkin_status = data.claimed ? 'success' : (data.already_claimed ? 'already claimed' : 'pending');
       acc.last_checkin_at = new Date().toISOString();
     }
     const panel = document.getElementById('genshin-panel');
-    if (panel) renderCheckin(panel);
-  } catch (err) {
+    if(panel) renderCheckin(panel);
+  } catch(err){
     showToast('error', err.message || 'Check-in failed');
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Run daily check-in';
-    }
+    if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Run daily check-in'; }
   }
 }
 
-async function renderRoleStats(panel) {
-  const token = (Sayraa.user && Sayraa.user.token) || localStorage.getItem('sayraa_token');
-  if (!token) return panel.innerHTML = genshinSignInPrompt();
+async function renderRoleStats(panel){
+  if(!Sayraa.user) return panel.innerHTML = genshinSignInPrompt();
   const acc = activeGenshinAccount();
-  if (!acc) return panel.innerHTML = genshinNoAccountPrompt();
+  if(!acc) return panel.innerHTML = genshinNoAccountPrompt();
 
-  try {
-    const res = await fetch(`${GENSHIN_BASE}/accounts/${acc.id}/stats`, genshinFetchOptions('GET'));
+  try{
+    const res = await fetch(`${GENSHIN_BASE}/accounts/${acc.id}/stats`, { headers: genshinAuthHeaders() });
     const d = await res.json();
-    if (!res.ok || !d.ok) throw new Error(d.message || d.error || 'Failed to load stats');
+    if(!res.ok || !d.ok) throw new Error(d.message || 'Failed to load stats');
 
     panel.innerHTML = `
       <div class="glass card p-5 mb-4">
@@ -1732,17 +1663,17 @@ async function renderRoleStats(panel) {
           </div>
         </div>
         <div class="grid grid-cols-3 gap-2.5 text-center">
-          ${statChip(d.stats.active_days, 'Active days')}
-          ${statChip(d.stats.achievements, 'Achievements')}
-          ${statChip(d.stats.avatars_count, 'Characters')}
-          ${statChip(d.stats.domains, 'Domains')}
-          ${statChip(d.stats.spiral_abyss, 'Abyss')}
-          ${statChip(d.stats.way_points, 'Waypoints')}
+          ${statChip(d.stats.active_days,'Active days')}
+          ${statChip(d.stats.achievements,'Achievements')}
+          ${statChip(d.stats.avatars_count,'Characters')}
+          ${statChip(d.stats.domains,'Domains')}
+          ${statChip(d.stats.spiral_abyss,'Abyss')}
+          ${statChip(d.stats.way_points,'Waypoints')}
         </div>
       </div>
       <h3 class="font-semibold text-[14px] mb-2.5">Characters</h3>
       <div class="space-y-2.5">
-        ${d.avatars.map(a => `
+        ${d.avatars.map(a=>`
           <div class="glass card p-3.5 flex items-center gap-3">
             <div class="icon-tile overflow-hidden" style="background:${ELEMENT_COLOR[a.element]}22; color:${ELEMENT_COLOR[a.element]}">
               ${a.image ? `<img src="${a.image}" class="w-full h-full object-cover" onerror="this.remove()">` : `<i class="fa-solid fa-user"></i>`}
@@ -1752,20 +1683,19 @@ async function renderRoleStats(panel) {
                 <span class="font-medium text-[13.5px]">${a.name}</span>
                 <span class="text-[10.5px]" style="color:var(--text-faint)">C${a.constellation}</span>
               </div>
-              <div class="text-[11.5px]" style="color:var(--text-dim)">Lv.${a.level} · ${a.weapon ? a.weapon.name : 'No Weapon'}</div>
+              <div class="text-[11.5px]" style="color:var(--text-dim)">Lv.${a.level} · ${a.weapon.name}</div>
             </div>
             <span class="pill" style="background:${ELEMENT_COLOR[a.element]}18; color:${ELEMENT_COLOR[a.element]}">${a.element}</span>
           </div>`).join('')}
       </div>
     `;
-  } catch (err) {
+  } catch(err){
     panel.innerHTML = genshinErrorCard(err.message || 'Failed to load role stats');
   }
 }
+function statChip(val,label){ return `<div class="rounded-xl py-3" style="background:rgba(255,255,255,.03); border:1px solid var(--line)"><div class="font-bold text-[15px] mono">${val}</div><div class="text-[10px] mt-0.5" style="color:var(--text-faint)">${label}</div></div>`; }
 
-function statChip(val, label) { return `<div class="rounded-xl py-3" style="background:rgba(255,255,255,.03); border:1px solid var(--line)"><div class="font-bold text-[15px] mono">${val}</div><div class="text-[10px] mt-0.5" style="color:var(--text-faint)">${label}</div></div>`; }
-
-function renderCalendar(panel) {
+function renderCalendar(panel){
   const d = GENSHIN_MOCK.checkinList;
   panel.innerHTML = `
     <div class="flex items-center justify-between mb-3">
@@ -1773,7 +1703,7 @@ function renderCalendar(panel) {
       ${d.resign_available ? `<span class="pill" style="background:rgba(245,166,35,.14); color:var(--amber)">Re-sign available</span>` : ''}
     </div>
     <div class="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-4">
-      ${d.monthly_awards.map(a => `
+      ${d.monthly_awards.map(a=>`
         <div class="glass card p-2.5 text-center">
           <div class="text-[10px]" style="color:var(--text-faint)">Day ${a.day}</div>
           <div class="text-[10.5px] font-medium mt-1 truncate">${a.name}</div>
@@ -1782,11 +1712,11 @@ function renderCalendar(panel) {
     </div>
     <h3 class="font-semibold text-[14px] mb-2.5">Bonus Rewards</h3>
     <div class="space-y-2">
-      ${d.extra_awards.map(e => `
+      ${d.extra_awards.map(e=>`
         <div class="glass card p-3.5 flex items-center gap-3">
           <div class="icon-tile" style="background:rgba(124,111,240,.14); color:var(--accent)"><i class="fa-solid fa-star"></i></div>
           <div class="flex-1">
-            <div class="text-[13px] font-medium">Sign for ${e.sign_day_required} day${e.sign_day_required > 1 ? 's' : ''}</div>
+            <div class="text-[13px] font-medium">Sign for ${e.sign_day_required} day${e.sign_day_required>1?'s':''}</div>
             <div class="text-[11.5px]" style="color:var(--text-dim)">×${e.count} bonus reward</div>
           </div>
           ${e.is_highlight ? `<span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)">Featured</span>` : ''}
@@ -1794,11 +1724,10 @@ function renderCalendar(panel) {
     </div>
   `;
 }
-
-function timeAgo(iso) {
-  const diff = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
-  if (diff < 60) return `${diff}m ago`;
-  return `${Math.round(diff / 60)}h ago`;
+function timeAgo(iso){
+  const diff = Math.max(1, Math.round((Date.now()-new Date(iso).getTime())/60000));
+  if(diff < 60) return `${diff}m ago`;
+  return `${Math.round(diff/60)}h ago`;
 }
 
 
