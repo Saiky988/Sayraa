@@ -1171,16 +1171,6 @@ async function deleteApiKey() {
 const GENSHIN_BASE = 'https://api.sayraa.xyz/api/v1/genshin';
 const ELEMENT_COLOR = {Pyro:'#f4586b', Hydro:'#5aa7ef', Dendro:'#8b9a68', Electro:'#b48ef0', Anemo:'#34d6b4', Cryo:'#8fd8ef', Geo:'#f5a623'};
 
-// Kept for the illustrative Rewards Calendar tab only (no backend endpoint for the monthly grid).
-const GENSHIN_MOCK = {
-  checkinList: { ok:true, month:7, resign_available:true, has_month_card:false,
-    monthly_awards:[
-      {day:1,name:'Adventurer\'s EXP',count:3},{day:2,name:'Mora',count:10000},{day:3,name:'Fine Enhancement Ore',count:3},
-      {day:4,name:'Primogem',count:20},{day:5,name:'Hero\'s Wit',count:2},{day:6,name:'Mystic Enhancement Ore',count:2},{day:7,name:'Primogem',count:30},
-    ],
-    extra_awards:[ {id:228, sign_day_required:2, count:20, is_highlight:true} ] },
-};
-
 /* ---- account state ---- */
 let genshinAccounts = [];
 let genshinActiveId = null;
@@ -1333,10 +1323,10 @@ function openAccountSettingsSheet(id){
     <h3 class="display font-bold text-[16px] mb-1">${acc.nickname || ('UID '+acc.uid)}</h3>
     <p class="text-[12.5px] mb-4 mono" style="color:var(--text-faint)">UID ${acc.uid} · ${acc.server}</p>
     <div class="space-y-3 mb-5">
-      ${genshinToggleRow('ga-tg-checkin', '🔄 Auto check-in', acc.auto_checkin, id, 'auto_checkin')}
-      ${genshinToggleRow('ga-tg-redeem', '🎁 Auto redeem codes', acc.auto_redeem, id, 'auto_redeem')}
-      ${genshinToggleRow('ga-tg-notes', '🧪 Auto sync resin / daily note', acc.auto_daily_note, id, 'auto_daily_note')}
-      ${genshinToggleRow('ga-tg-default', '⭐ Set as default account', acc.is_default, id, 'is_default')}
+      ${genshinToggleRow('ga-tg-checkin', 'Auto check-in', acc.auto_checkin, id, 'auto_checkin')}
+      ${genshinToggleRow('ga-tg-redeem', 'Auto redeem codes', acc.auto_redeem, id, 'auto_redeem')}
+      ${genshinToggleRow('ga-tg-notes', 'Auto sync resin / daily note', acc.auto_daily_note, id, 'auto_daily_note')}
+      ${genshinToggleRow('ga-tg-default', 'Set as default account', acc.is_default, id, 'is_default')}
     </div>
     <button class="btn btn-danger w-full" onclick="deleteGenshinAccount(${id})"><i class="fa-solid fa-trash"></i> Remove account</button>
   `);
@@ -1651,8 +1641,12 @@ async function renderRoleStats(panel){
     const d = await res.json();
     if(!res.ok || !d.ok) throw new Error(d.message || 'Failed to load stats');
 
+    const chests = d.stats.chests || {};
+    const oculus = d.stats.oculus || {};
+    const avatars = d.avatars || [];
+
     panel.innerHTML = `
-      <div class="glass card p-5 mb-4">
+      <div class="glass card p-5 mb-3.5">
         <div class="flex items-center gap-3.5 mb-4">
           <div class="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center font-bold glass">
             ${d.role.avatar_url ? `<img src="${d.role.avatar_url}" class="w-full h-full object-cover" onerror="this.remove()">` : d.role.nickname[0]}
@@ -1671,22 +1665,33 @@ async function renderRoleStats(panel){
           ${statChip(d.stats.way_points,'Waypoints')}
         </div>
       </div>
-      <h3 class="font-semibold text-[14px] mb-2.5">Characters</h3>
+
+      <div class="glass card p-5 mb-3.5">
+        <h3 class="font-semibold text-[14px] mb-3">Chest Breakdown</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
+          ${statChip(chests.common ?? 0,'Common')}
+          ${statChip(chests.exquisite ?? 0,'Exquisite')}
+          ${statChip(chests.precious ?? 0,'Precious')}
+          ${statChip(chests.luxurious ?? 0,'Luxurious')}
+          ${statChip(chests.magic ?? 0,'Magic')}
+        </div>
+      </div>
+
+      <div class="glass card p-5 mb-3.5">
+        <h3 class="font-semibold text-[14px] mb-3">Oculus Progress</h3>
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
+          ${oculusChip(oculus.anemo ?? 0,'Anemo')}
+          ${oculusChip(oculus.geo ?? 0,'Geo')}
+          ${oculusChip(oculus.electro ?? 0,'Electro')}
+          ${oculusChip(oculus.dendro ?? 0,'Dendro')}
+          ${oculusChip(oculus.hydro ?? 0,'Hydro')}
+          ${oculusChip(oculus.pyro ?? 0,'Pyro')}
+        </div>
+      </div>
+
+      <h3 class="font-semibold text-[14px] mb-2.5">Characters (${avatars.length})</h3>
       <div class="space-y-2.5">
-        ${d.avatars.map(a=>`
-          <div class="glass card p-3.5 flex items-center gap-3">
-            <div class="icon-tile overflow-hidden" style="background:${ELEMENT_COLOR[a.element]}22; color:${ELEMENT_COLOR[a.element]}">
-              ${a.image ? `<img src="${a.image}" class="w-full h-full object-cover" onerror="this.remove()">` : `<i class="fa-solid fa-user"></i>`}
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-1.5">
-                <span class="font-medium text-[13.5px]">${a.name}</span>
-                <span class="text-[10.5px]" style="color:var(--text-faint)">C${a.constellation}</span>
-              </div>
-              <div class="text-[11.5px]" style="color:var(--text-dim)">Lv.${a.level} · ${a.weapon.name}</div>
-            </div>
-            <span class="pill" style="background:${ELEMENT_COLOR[a.element]}18; color:${ELEMENT_COLOR[a.element]}">${a.element}</span>
-          </div>`).join('')}
+        ${avatars.map(a=>avatarCardHTML(a)).join('')}
       </div>
     `;
   } catch(err){
@@ -1694,35 +1699,124 @@ async function renderRoleStats(panel){
   }
 }
 function statChip(val,label){ return `<div class="rounded-xl py-3" style="background:rgba(255,255,255,.03); border:1px solid var(--line)"><div class="font-bold text-[15px] mono">${val}</div><div class="text-[10px] mt-0.5" style="color:var(--text-faint)">${label}</div></div>`; }
-
-function renderCalendar(panel){
-  const d = GENSHIN_MOCK.checkinList;
-  panel.innerHTML = `
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="font-semibold text-[14px]">Check-in Rewards — Month ${d.month}</h3>
-      ${d.resign_available ? `<span class="pill" style="background:rgba(245,166,35,.14); color:var(--amber)">Re-sign available</span>` : ''}
-    </div>
-    <div class="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-4">
-      ${d.monthly_awards.map(a=>`
-        <div class="glass card p-2.5 text-center">
-          <div class="text-[10px]" style="color:var(--text-faint)">Day ${a.day}</div>
-          <div class="text-[10.5px] font-medium mt-1 truncate">${a.name}</div>
-          <div class="text-[11px] mono" style="color:var(--teal)">×${a.count}</div>
-        </div>`).join('')}
-    </div>
-    <h3 class="font-semibold text-[14px] mb-2.5">Bonus Rewards</h3>
-    <div class="space-y-2">
-      ${d.extra_awards.map(e=>`
-        <div class="glass card p-3.5 flex items-center gap-3">
-          <div class="icon-tile" style="background:rgba(124,111,240,.14); color:var(--accent)"><i class="fa-solid fa-star"></i></div>
-          <div class="flex-1">
-            <div class="text-[13px] font-medium">Sign for ${e.sign_day_required} day${e.sign_day_required>1?'s':''}</div>
-            <div class="text-[11.5px]" style="color:var(--text-dim)">×${e.count} bonus reward</div>
+function oculusChip(val,label){
+  const color = ELEMENT_COLOR[label] || 'var(--text-dim)';
+  return `<div class="rounded-xl py-3" style="background:${color}14; border:1px solid ${color}33"><div class="font-bold text-[15px] mono" style="color:${color}">${val}</div><div class="text-[10px] mt-0.5" style="color:var(--text-faint)">${label}</div></div>`;
+}
+function rarityStars(n){
+  if(!n) return '';
+  const color = n>=5 ? '#f5a623' : (n>=4 ? '#b48ef0' : 'var(--text-faint)');
+  return `<span class="mono" style="color:${color}; letter-spacing:-1px">${'★'.repeat(n)}</span>`;
+}
+function avatarCardHTML(a){
+  const color = ELEMENT_COLOR[a.element] || 'var(--text-dim)';
+  const relics = a.relics || [];
+  const weapon = a.weapon || {};
+  return `
+    <div class="glass card overflow-hidden">
+      <button type="button" class="w-full flex items-center gap-3 p-3.5 text-left" onclick="toggleAvatarCard(this)">
+        <div class="icon-tile overflow-hidden" style="background:${color}22; color:${color}">
+          ${a.image ? `<img src="${a.image}" class="w-full h-full object-cover" onerror="this.remove()">` : `<i class="fa-solid fa-user"></i>`}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="font-medium text-[13.5px]">${a.name}</span>
+            <span class="text-[10.5px]" style="color:var(--text-faint)">C${a.constellation ?? 0}</span>
+            ${a.fetter != null ? `<span class="text-[10.5px]" style="color:var(--text-faint)"><i class="fa-solid fa-heart" style="color:var(--rose); font-size:9px"></i> ${a.fetter}</span>` : ''}
           </div>
-          ${e.is_highlight ? `<span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)">Featured</span>` : ''}
-        </div>`).join('')}
-    </div>
-  `;
+          <div class="text-[11.5px]" style="color:var(--text-dim)">Lv.${a.level} · ${weapon.name || '—'}</div>
+        </div>
+        <span class="pill" style="background:${color}18; color:${color}">${a.element}</span>
+        <i class="fa-solid fa-chevron-right chev-ic text-[11px]" style="color:var(--text-faint); transition:transform .2s ease; flex-shrink:0"></i>
+      </button>
+      <div class="avatar-detail" style="display:none; border-top:1px solid var(--line)">
+        <div class="p-3.5">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="icon-tile" style="background:rgba(255,255,255,.04)"><i class="fa-solid fa-khanda" style="color:var(--text-dim)"></i></div>
+            <div class="flex-1 min-w-0">
+              <div class="text-[12.5px] font-medium">${weapon.name || 'No weapon data'}</div>
+              <div class="text-[10.5px] flex items-center gap-1.5" style="color:var(--text-faint)">
+                <span>Lv.${weapon.level ?? '—'} · R${weapon.affix_level ?? 1}</span>
+                ${rarityStars(weapon.rarity)}
+              </div>
+            </div>
+          </div>
+          ${relics.length ? `
+            <div class="text-[11px] mb-2" style="color:var(--text-faint)">Artifacts</div>
+            <div class="space-y-1.5">
+              ${relics.map(r=>`
+                <div class="flex items-center justify-between gap-2 text-[11.5px] rounded-lg px-2.5 py-2" style="background:rgba(255,255,255,.03)">
+                  <div class="min-w-0">
+                    <div class="font-medium truncate">${r.name}</div>
+                    <div class="truncate" style="color:var(--text-faint)">${r.pos_name} · ${r.set_name}</div>
+                  </div>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    ${rarityStars(r.rarity)}
+                    <span class="mono" style="color:var(--text-dim)">+${r.level}</span>
+                  </div>
+                </div>`).join('')}
+            </div>
+          ` : `<div class="text-[11.5px]" style="color:var(--text-faint)">No artifacts equipped</div>`}
+        </div>
+      </div>
+    </div>`;
+}
+function toggleAvatarCard(btn){
+  const detail = btn.nextElementSibling;
+  const icon = btn.querySelector('.chev-ic');
+  const isOpen = detail.style.display !== 'none';
+  detail.style.display = isOpen ? 'none' : 'block';
+  if(icon) icon.style.transform = isOpen ? '' : 'rotate(90deg)';
+}
+
+async function renderCalendar(panel){
+  if(!Sayraa.user) return panel.innerHTML = genshinSignInPrompt();
+  const acc = activeGenshinAccount();
+  if(!acc) return panel.innerHTML = genshinNoAccountPrompt();
+
+  try{
+    let res = await fetch(`${GENSHIN_BASE}/accounts/${acc.id}/checkin-list`, { headers: genshinAuthHeaders() });
+    if(res.status === 404 || res.status === 405){
+      res = await fetch(`${GENSHIN_BASE}/accounts/${acc.id}/checkin-list`, { method: 'POST', headers: genshinAuthHeaders() });
+    }
+    const d = await res.json();
+    if(!res.ok || d.ok === false) throw new Error(d.message || 'Failed to load rewards calendar');
+
+    const monthlyAwards = d.monthly_awards || [];
+    const extraAwards = d.extra_awards || [];
+
+    panel.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-[14px]">Check-in Rewards${d.month ? ` — Month ${d.month}` : ''}</h3>
+        ${d.resign_available ? `<span class="pill" style="background:rgba(245,166,35,.14); color:var(--amber)">Re-sign available</span>` : ''}
+      </div>
+      <div class="grid grid-cols-4 sm:grid-cols-7 gap-2 mb-4">
+        ${monthlyAwards.map(a=>`
+          <div class="glass card p-2.5 text-center ${a.claimed ? 'opacity-50' : ''}">
+            <div class="text-[10px]" style="color:var(--text-faint)">Day ${a.day}</div>
+            ${a.icon ? `<img src="${a.icon}" class="w-7 h-7 mx-auto my-1 object-contain" onerror="this.style.display='none'">` : ''}
+            <div class="text-[10.5px] font-medium mt-1 truncate">${a.name}</div>
+            <div class="text-[11px] mono" style="color:var(--teal)">×${a.count}</div>
+          </div>`).join('')}
+      </div>
+      ${extraAwards.length ? `
+        <h3 class="font-semibold text-[14px] mb-2.5">Bonus Rewards</h3>
+        <div class="space-y-2">
+          ${extraAwards.map(e=>`
+            <div class="glass card p-3.5 flex items-center gap-3">
+              <div class="icon-tile" style="background:rgba(124,111,240,.14); color:var(--accent)"><i class="fa-solid fa-star"></i></div>
+              <div class="flex-1">
+                <div class="text-[13px] font-medium">Sign for ${e.sign_day_required} day${e.sign_day_required>1?'s':''}</div>
+                <div class="text-[11.5px]" style="color:var(--text-dim)">×${e.count} bonus reward</div>
+              </div>
+              ${e.is_highlight ? `<span class="pill" style="background:rgba(52,214,180,.14); color:var(--teal)">Featured</span>` : ''}
+            </div>`).join('')}
+        </div>
+      ` : ''}
+    `;
+  } catch(err){
+    panel.innerHTML = genshinErrorCard(err.message || 'Failed to load rewards calendar');
+  }
 }
 function timeAgo(iso){
   const diff = Math.max(1, Math.round((Date.now()-new Date(iso).getTime())/60000));
