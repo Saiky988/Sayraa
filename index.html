@@ -1569,8 +1569,10 @@ async function renderRoleStats(panel){
             ${d.role.avatar_url ? `<img src="${d.role.avatar_url}" class="w-full h-full object-cover" onerror="this.remove()">` : d.role.nickname[0]}
           </div>
           <div>
-            <div class="font-semibold text-[14.5px]">${d.role.nickname}</div>
-            <div class="text-[11.5px]" style="color:var(--text-faint)">Adventure Level ${d.role.level}</div>
+            <div class="font-semibold text-[14.5px]">${d.role.nickname} <span class="text-[12px] font-normal" style="color:var(--text-faint)">[cấp ${d.role.level}]</span></div>
+            <div class="text-[11.5px] mono" style="color:var(--text-faint)">
+              ${acc.server || 'Asia Server'} | UID ${acc.uid || d.role.game_head_id || '890096220'}
+            </div>
           </div>
         </div>
 
