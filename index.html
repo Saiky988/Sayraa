@@ -1333,10 +1333,10 @@ function openAccountSettingsSheet(id){
     <h3 class="display font-bold text-[16px] mb-1">${acc.nickname || ('UID '+acc.uid)}</h3>
     <p class="text-[12.5px] mb-4 mono" style="color:var(--text-faint)">UID ${acc.uid} · ${acc.server}</p>
     <div class="space-y-3 mb-5">
-      ${genshinToggleRow('ga-tg-checkin', '🔄 Auto check-in', acc.auto_checkin, id, 'auto_checkin')}
-      ${genshinToggleRow('ga-tg-redeem', '🎁 Auto redeem codes', acc.auto_redeem, id, 'auto_redeem')}
-      ${genshinToggleRow('ga-tg-notes', '🧪 Auto sync resin / daily note', acc.auto_daily_note, id, 'auto_daily_note')}
-      ${genshinToggleRow('ga-tg-default', '⭐ Set as default account', acc.is_default, id, 'is_default')}
+      ${genshinToggleRow('ga-tg-checkin', 'Auto check-in', acc.auto_checkin, id, 'auto_checkin')}
+      ${genshinToggleRow('ga-tg-redeem', 'Auto redeem codes', acc.auto_redeem, id, 'auto_redeem')}
+      ${genshinToggleRow('ga-tg-notes', 'Auto sync resin / daily note', acc.auto_daily_note, id, 'auto_daily_note')}
+      ${genshinToggleRow('ga-tg-default', 'Set as default account', acc.is_default, id, 'is_default')}
     </div>
     <button class="btn btn-danger w-full" onclick="deleteGenshinAccount(${id})"><i class="fa-solid fa-trash"></i> Remove account</button>
   `);
